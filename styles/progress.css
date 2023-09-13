@@ -1,6 +1,8 @@
 #progress-container {
     position: fixed;
-    bottom: 3rem;
+    inset: auto 50% 3rem;
+    transform: translateX(-50%);
+    
     width: 100vw;
     
     z-index: 10;
@@ -9,6 +11,8 @@
     flex-direction: column;
     justify-content: center;
     padding: 0 1rem;
+
+    max-width: 1000px;
 }
 
 #progress-inner-container {
@@ -17,6 +21,8 @@
     
     display: grid;
     place-items: center;
+
+    
 }
 
 #progress {

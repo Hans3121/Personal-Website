@@ -1,6 +1,5 @@
-footer {
-    display: flex;
-    flex-direction: column;
+#ending {
+    
     gap: 5px;
 
     width: 100%;
@@ -13,7 +12,7 @@ footer {
 
 }
 
-footer::before {
+#ending::before {
     /* content: ""; */
     position: absolute;
     height: 2px;
@@ -29,14 +28,14 @@ footer::before {
     background-color: rgba(0,0,0,0.1);
 }
 
-footer *{
+#ending *{
     text-align: center;
 }
 
-footer p, footer h3{
+#ending p, #ending h3{
     font-size: 24px;
 }
 
-footer h3 {
+#ending h3 {
     padding: 10px;
 }

@@ -11,10 +11,10 @@
     <title>Hans' Website</title>
 
     
+    <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="styles/greetings.css">
-    <link rel="stylesheet" href="styles/index.css">
-    <link rel="stylesheet" href="styles/footer.css">
     <link rel="stylesheet" href="styles/progress.css">
+    <link rel="stylesheet" href="styles/ending.css">
 </head>
 
 <body>
@@ -28,7 +28,7 @@
         </datalist>
     </div>
 
-
+    <!-- Screens -->
     <div class="screen center" title="Greetings">
         <svg class="svg-waves" viewBox="0 0 1440 590" preserveAspectRation="xMaxYMid" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -59,17 +59,28 @@
     </div>
 
     <div class="screen center" title="About Me">
-        <h1>Test</h1>
+        <div id="about-me">
+            <h1>Hans' Homepage</h1>
+            <img src="images/avatar.jpg" alt="avatar.jpg">
+            <h2>Hans</h2>
+            <p>First-year undergraduate student in computer science at CityU</p>
+
+        </div>
     </div>
     
 
-    <footer class="screen center" title="Footer">
+    <div class="screen center" id="ending" title="Some Tools">
         <div>
-            <h3>⭐ Some Tools ⭐</h3>
+            <h3>⭐ Some Tools used ⭐<br> in the making of this Website </h3>
             <p>'Plus Jakarta Sans' font from <a href="https://fonts.google.com/specimen/Plus+Jakarta+Sans">Google Fonts</a></p>
             <p>'Waves' from <a href="https://svgwave.in/">SVG Wave</a></p>
             <p>Some colors from <a href="https://tailwindcss.com/docs/customizing-colors">TailwindCSS</a></p>
         </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Copyright &copy; 2023 Hans. All rights reserved.</p>
     </footer>
 </body>
 

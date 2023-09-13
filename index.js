@@ -10,4 +10,3 @@ let progressBar = document.getElementById("progress")
 let screens = document.getElementsByClassName("screen")
 let datalist = document.getElementById("screen-labels")
 let progress = new Progress(progressBar, screens, datalist)
-
