@@ -1,0 +1,42 @@
+footer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    width: 100%;
+    min-height: 100px;
+    
+    background: var(--secondary);
+    
+
+    padding-bottom: 20px;
+
+}
+
+footer::before {
+    /* content: ""; */
+    position: absolute;
+    height: 2px;
+    border-radius: 2px;
+
+    /* A Hack to center the line */
+    width: 90vw;
+    left: 50%;
+    margin-left: -45vw;
+
+    transform: translateY(-20px);
+
+    background-color: rgba(0,0,0,0.1);
+}
+
+footer *{
+    text-align: center;
+}
+
+footer p, footer h3{
+    font-size: 24px;
+}
+
+footer h3 {
+    padding: 10px;
+}
