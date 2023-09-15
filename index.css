@@ -15,8 +15,12 @@
     width: 100vw;
     height: 100vh;
     position: absolute;
-    opacity: 0;
     transition: all 0.3s ease-in-out
+}
+
+.screen.hide {
+    opacity: 0;
+    z-index: 0;
 }
 
 .screen.show {

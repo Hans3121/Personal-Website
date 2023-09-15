@@ -12,8 +12,9 @@
 
     
     <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="styles/greetings.css">
     <link rel="stylesheet" href="styles/progress.css">
+    <link rel="stylesheet" href="styles/greetings.css">
+    <link rel="stylesheet" href="styles/aboutMe.css">
     <link rel="stylesheet" href="styles/ending.css">
 </head>
 
@@ -21,7 +22,7 @@
     <!-- Naming is difficult :< -->
     <div id="progress-container">
         <div id="progress-inner-container">
-            <input type="range" min="0" max="100" step="25" id="progress" list="screen-labels">
+            <input type="range" id="progress" list="screen-labels">
             <hr id="progress-line">
         </div>
         <datalist id="screen-labels">
@@ -29,7 +30,7 @@
     </div>
 
     <!-- Screens -->
-    <div class="screen center" title="Greetings">
+    <div class="screen center hide" data-title="Greetings">
         <svg class="svg-waves" viewBox="0 0 1440 590" preserveAspectRation="xMaxYMid" xmlns="http://www.w3.org/2000/svg">
             <path
                     d="M 0,600 C 0,600 0,120 0,120 C 64.24880382775123,133.43540669856458 128.49760765550246,146.87081339712918 243,143 C 357.50239234449754,139.12918660287082 522.2583732057416,117.95215311004786 628,110 C 733.7416267942584,102.04784688995214 780.4688995215312,107.32057416267943 858,104 C 935.5311004784688,100.67942583732057 1043.866028708134,88.76555023923444 1146,90 C 1248.133971291866,91.23444976076556 1344.066985645933,105.61722488038278 1440,120 C 1440,120 1440,600 1440,600 Z"
@@ -58,7 +59,7 @@
         <div id="greetings-bottom-shadow"></div>
     </div>
 
-    <div class="screen center" title="About Me">
+    <div class="screen center hide" data-title="About Me">
         <div id="about-me">
             <h1>Hans' Homepage</h1>
             <img src="images/avatar.jpg" alt="avatar.jpg">
@@ -69,7 +70,7 @@
     </div>
     
 
-    <div class="screen center" id="ending" title="Some Tools">
+    <div class="screen center hide" id="ending" data-title="Some Tools">
         <div>
             <h3>⭐ Some Tools used ⭐<br> in the making of this Website </h3>
             <p>'Plus Jakarta Sans' font from <a href="https://fonts.google.com/specimen/Plus+Jakarta+Sans">Google Fonts</a></p>

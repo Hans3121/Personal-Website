@@ -1,4 +1,4 @@
-#hello-text {
+#hello-text, .screen.hide #hello-text {
     font-size: clamp(50px, 15vw, 100px);
     font-weight: 700;
     position: relative;
@@ -45,11 +45,13 @@
     translate: 0 min(calc(-20vw + 130px), 0px)
 }
 
-
 .path-0, .path-1, .path-2, .path-3 {
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     animation-duration: 4s;
+
+    position: relative;
+    transition: all .5s ease-in-out;
 }
 
 .path-0 {
@@ -67,6 +69,23 @@
 .path-3 {
     animation-name: pathAnim-3;
 }
+
+.screen.hide .path-0 {
+    transform: translateY(100px);
+}
+
+.screen.hide .path-1 {
+    transform: translateY(200px);
+}
+
+.screen.hide .path-2 {
+    transform: translateY(300px);
+}
+
+.screen.hide .path-3 {
+    transform: translateY(400px);
+}
+
 
 @keyframes pathAnim-0 {
     0% {
@@ -164,4 +183,10 @@
     bottom: 0;
     width: 100%;
     box-shadow: var(--secondary) 0 -30px 60px 50px;
+
+    transition: transform 0.5s ease-in-out;
+}
+
+.screen.hide #greetings-bottom-shadow {
+    transform: translateY(100px)
 }
