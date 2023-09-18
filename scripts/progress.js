@@ -3,7 +3,7 @@
 
 
 /**
- * Class to replace the functionality of a scrollbar by using a {@link progressBar}
+ * Class to replace the functionality of a scrollbar by using a {@link progressSlider}
  * to scroll/progress through multiple {@link screens}.
  * 
  * Screens sizes should be equal to the parent container's size
@@ -13,11 +13,12 @@
  * 
  * For best visuals, add the class 'hide' to all screens in the html.
  */
-export class Progress {
+class Progress {
     /** 
      * The Progress Bar of the website, replaces the scrollbar
-     * @type {HTMLInputElement}
+     * @type {HTMLElement}
      */
+<<<<<<< Updated upstream
     progressBar
 
     /**
@@ -31,24 +32,21 @@ export class Progress {
      * @type {HTMLDataListElement}
      */
     datalist
+=======
+    progressSlider
+>>>>>>> Stashed changes
 
     /**
      * The screens the progress bar will progress through
-     * @type {HTMLCollectionOf<Element>}
+     * @type {HTMLCollectionOf<HTMLElement>}
      */
     screens
 
     /**
-     * parent container of screens
+     * Container for the buttons that will change the screens
      * @type {HTMLElement}
      */
-    screenParent
-
-    /**
-     * The Index of the current screen
-     * @type {number}
-     */
-    currentScreenIndex
+    buttonContainer
 
     /**
      * The MS delay of time when changing screens
@@ -56,27 +54,26 @@ export class Progress {
      */
     changeScreenDelay = 500
 
-    /**
-     * This will determine the amount of value between screens in the progressBar.
-     * The max attribute will be {@link rangeLengthMultiplier} * {@link screens}.length
-     * @type {number}
-     */
-    rangeLengthMultiplier = 1000
-
 
     /**
-     * Construcs a progress object. Incomplete Documentation
-     * @param {HTMLInputElement} progressBar
-     * @param {HTMLCollectionOf<Element>} screens
-     * @param {HTMLElement} screenParent
-     * @param {HTMLDataListElement} datalist
+     * Construcs a progress object. 
+     * @param {HTMLElement} progressSlider - The element that would be the progress slider
+     * @param {HTMLElement} screensContainer - Container of all the screens
+     * @param {HTMLElement} buttonContainer - Container that will be filled with buttons to change screens
      */
+<<<<<<< Updated upstream
     constructor(progressBar, screens, datalist) {
         this.progressBar = progressBar
         this.#progressBarAnimator = new ProgressBarAnimator(progressBar) 
         this.screens = screens
         this.datalist = datalist
         this.currentScreenIndex = 0
+=======
+    constructor(progressSlider, screensContainer, buttonContainer) {
+        this.progressSlider = progressSlider
+        this.screens = screensContainer.children
+        this.buttonContainer = buttonContainer
+>>>>>>> Stashed changes
         this.#setup()
     }
 
@@ -84,6 +81,7 @@ export class Progress {
      * Private function to setup the whole thing, called when class is constructed.
      */
     #setup() {
+<<<<<<< Updated upstream
         // Sets up the screens list
         for (let i = 1; i < this.screens.length; i++){
             this.screens[i].classList.add("hide")
@@ -117,18 +115,26 @@ export class Progress {
     }
 
     #setupDatalist() {
+=======
+        // Setup the buttons
+>>>>>>> Stashed changes
         for (let i = 0; i < this.screens.length; i++) {
-            let option = document.createElement("option")
-            option.value = i * this.rangeLengthMultiplier
-            option.label = this.screens[i].dataset.title || "Untitled"
-            option.addEventListener("click", (ev) => {
+            let btn = document.createElement("button")
+            btn.innerText = this.screens[i].dataset.title || "Untitled"
+            btn.addEventListener("click", () => {
                 this.changeScreen(i)
             })
-            this.datalist.appendChild(option)
+            this.buttonContainer.appendChild(btn)
         }
+
+        this.changeScreen(0)     
     }
 
 
+    /**
+     * Holds the Id of the Timeout Function so only one of it can exist at a time, 
+     * otherwise may cause weird screen changes
+     */
     _changeScreenTimeoutId
     /**
      * Changes the screen and moves the scrollbar by calling {@link scrollProgressBar}.
@@ -136,31 +142,29 @@ export class Progress {
      * @param {number} newScreenIndex 
      */
     changeScreen(newScreenIndex) {
+<<<<<<< Updated upstream
         // this.progressBar.value = newScreenIndex * this._rangeLengthMultiplier
         this.#progressBarAnimator.scrollTo(newScreenIndex * this.rangeLengthMultiplier)
+=======
+        this.progressSlider.style.setProperty('--value', newScreenIndex * 100 / (this.screens.length-1) + "%")
+>>>>>>> Stashed changes
 
-        if (newScreenIndex == this.currentScreenIndex) {
-            return
-        }
 
-        
-        // Hide Current Screen
-        let currentScreen = this.screens[this.currentScreenIndex].classList
-        currentScreen.remove("show")
-        currentScreen.add("hide")
-
-        this.currentScreenIndex = newScreenIndex;
+        this.#hideAllScreens()
 
         clearTimeout(this._changeScreenTimeoutId)
-        // Show Current Screen after x minutes
-        // Simulates a closure.. not pretty though..
         this._changeScreenTimeoutId = setTimeout(()=>{
-                let newScreen = this.screens[newScreenIndex].classList
-                newScreen.remove("hide")
-                newScreen.add("show")
+                this.#hideAllScreens()
+                this.screens[newScreenIndex].classList.replace("hide", "show")
             }, this.changeScreenDelay)
-        
+    }
 
+    #hideAllScreens() {
+        for (let i = 0; i < this.screens.length; i++){
+            let classList = this.screens[i].classList
+            classList.add("hide")
+            classList.remove("show")
+        }
     }
 }
 
