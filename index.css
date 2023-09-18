@@ -1,46 +1,94 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
 
+/* Default Styling */
 * {
     font-family: 'Plus Jakarta Sans', sans-serif;
     padding: 0;
     margin: 0;
-    max-width: 100%;
-    color: #1e293b; /* Tailwind Colors Slate-800 */
     box-sizing: border-box;
+
+    color: #1e293b; /* Tailwind Colors Slate-800 */
     --secondary: #F78DA7;
     --primary: #8ED1FC;
-}
-
-.screen {
-    width: 100vw;
-    height: 100vh;
-    position: absolute;
-    transition: all 0.3s ease-in-out
-}
-
-.screen.hide {
-    opacity: 0;
-    z-index: 0;
-}
-
-.screen.show {
-    opacity: 1;
-    z-index: 1;
-}
-
-
-.center {
-    display: grid;
-    place-items: center;
 }
 
 body {
     background-color: #e0f2fe; /* Tailwind Colors Blue-100 */
 }
 
-::-webkit-scrollbar {
-    display: none;
+#screens {
+    height: 100vh;
 }
+
+/* --- Crucial CSS Start --- */
+#screens > * {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transition: all 0.3s ease-in-out
+}
+
+#screens .hide { /* Progress.js adds .hide class to hide class */
+    opacity: 0;
+    z-index: 0;
+}
+
+#screens .show { /* Progress.js adds .show class to show class */
+    opacity: 1;
+    z-index: 1;
+}
+/* --- Crucial CSS End --- */
+
+#nav-bar {
+    position: absolute;
+    bottom: 3rem;
+    z-index: 10;
+
+    width: 100%;
+    max-width: 1000px;
+
+    padding: 0 1rem;
+}
+
+#nav-btns {
+    display: flex;
+    justify-content: space-between;
+
+    padding-top: 15px;
+}
+
+#nav-slider {
+    position: relative; 
+    /* Important : Without this, the slider thumb won't be absolute under it, 
+    but under its parent. See behaviour of position: absolute.  */
+
+    margin: 0 2rem;
+}
+
+#nav-slider-thumb {
+    width: 10px;
+    height: 20px;
+
+    position: absolute;
+    top: -10px;
+
+    background: var(--primary);
+
+    margin-left: var(--value);
+    /* Important : this is what will move the slider thumb. 
+    Progress.js changes the value of '--value' variable. */
+    transform: translateX(-50%);
+
+    transition: all 0.5s ease-in-out
+}
+
+
+.center {
+    display: grid ; 
+    place-items: center;
+}   
+
+
 
 footer {
     position: fixed;

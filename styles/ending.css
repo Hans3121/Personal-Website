@@ -12,21 +12,6 @@
 
 }
 
-#ending::before {
-    /* content: ""; */
-    position: absolute;
-    height: 2px;
-    border-radius: 2px;
-
-    /* A Hack to center the line */
-    width: 90vw;
-    left: 50%;
-    margin-left: -45vw;
-
-    transform: translateY(-20px);
-
-    background-color: rgba(0,0,0,0.1);
-}
 
 #ending *{
     text-align: center;
