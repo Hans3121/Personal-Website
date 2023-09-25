@@ -18,6 +18,7 @@ body {
 
 #screens {
     height: 100vh;
+    position: relative; /* Also important, so that children is absolute towards this element and not its ancestors */
 }
 
 /* --- Crucial CSS Start --- */
@@ -25,7 +26,8 @@ body {
     width: 100%;
     height: 100%;
     position: absolute;
-    transition: all 0.3s ease-in-out
+    transition: all 0.3s ease-in-out;
+    max-height: 100%;
 }
 
 #screens .hide { /* Progress.js adds .hide class to hide class */
@@ -82,7 +84,8 @@ body {
     Progress.js changes the value of '--value' variable. */
     transform: translateX(-50%);
 
-    transition: all 0.5s ease-in-out
+    transition: all 0.5s ease-in-out;
+    border: solid 1px black;
 }
 
 

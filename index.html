@@ -31,10 +31,10 @@
 
 
     <!-- Parent element for all the screens -->
-    <div id="screens">
+    <main id="screens">
         <!-- Put your content in these div elements, or add a new one -->
 
-        <div class="center hide" data-title="Greetings">
+        <section class="center hide" data-title="Greetings">
             <svg class="svg-waves" viewBox="0 0 1440 590" preserveAspectRation="xMaxYMid" xmlns="http://www.w3.org/2000/svg">
                 <path
                         d="M 0,600 C 0,600 0,120 0,120 C 64.24880382775123,133.43540669856458 128.49760765550246,146.87081339712918 243,143 C 357.50239234449754,139.12918660287082 522.2583732057416,117.95215311004786 628,110 C 733.7416267942584,102.04784688995214 780.4688995215312,107.32057416267943 858,104 C 935.5311004784688,100.67942583732057 1043.866028708134,88.76555023923444 1146,90 C 1248.133971291866,91.23444976076556 1344.066985645933,105.61722488038278 1440,120 C 1440,120 1440,600 1440,600 Z"
@@ -61,27 +61,59 @@
             </svg>
             <h1 id="hello-text" class="show">Hello</h1>
             <div id="greetings-bottom-shadow"></div>
-        </div>
+        </section>
 
-        <div class="center hide" data-title="About Me">
-            <div id="about-me">
-                <h1>Hans' Homepage</h1>
-                <img src="images/avatar.jpg" alt="avatar.jpg">
-                <h2>Hans</h2>
-                <p>First-year undergraduate student in computer science at CityU</p>
-    
-            </div>
-        </div>
+        <section class="hide" data-title="About Me">
+                <div id="about-me">
+                    <h1 id="profile">Hans' Homepage</h1>
+                    <nav>
+                        <a href="#profile">Profile</a>
+                        <a href="#contact">Contact</a>
+                    </nav>
+                    <img src="images/avatar.jpg" alt="avatar.jpg">
+                    <h2>Hans</h2>
+                    <p>First-year undergraduate student in computer science at CityU</p>
+                    <dl>
+                        <dt>Name</dt>
+                        <dd>Hans</dd>
+                        <dt>University</dt>
+                        <dd><img src="images/cityU.png" alt="City University of Hong Kong Logo"> <a href="https://cityu.edu.hk">City University of Hong Kong</a></dd>
+                        <dt>Cohort</dt>
+                        <dd>2023</dd>
+                        <dt>Department</dt>
+                        <dd><a href="https://cs.cityu.edu.hk">Computer Science</a></dd>
+                    </dl>
+                    <div>
+                        <p>Academic Interests Include</p>
+                        <ul>
+                            <li>Web Development</li>
+                            <li>Computer Security</li>
+                            <li>Computer Networking</li>
+                            <li>Computer Games</li>
+                        </ul>
+                    </div>
+                    <hr>
+                    <div id="contact">
+                        <p>I would be happy to discuss any interesting topics with you.
+                            <br>Please Contact me through the following channels:
+                        </p>
+                        <ol>
+                            <li>Email: <a href="mailto:hanseyang2-c@my.cityu.edu.hk">hanseyang2-c@my.cityu.edu.hk</a></li>
+                            <li>Phone Number: +852 510-838-89</li>
+                        </ol>
+                    </div>
+                </div>
+        </section>
 
-        <div class="center hide" id="ending" data-title="Some Tools">
+        <section class="center hide" id="ending" data-title="Some Tools">
             <div>
                 <h3>⭐ Some Tools used ⭐<br> in the making of this Website </h3>
                 <p>'Plus Jakarta Sans' font from <a href="https://fonts.google.com/specimen/Plus+Jakarta+Sans">Google Fonts</a></p>
                 <p>'Waves' from <a href="https://svgwave.in/">SVG Wave</a></p>
                 <p>Some colors from <a href="https://tailwindcss.com/docs/customizing-colors">TailwindCSS</a></p>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <footer>
         <p>Copyright &copy; 2023 Hans. All rights reserved.</p>
