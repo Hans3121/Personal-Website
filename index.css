@@ -58,8 +58,11 @@ body {
 #nav-btns {
     display: flex;
     justify-content: space-between;
-
     padding-top: 15px;
+}
+
+#nav-btns > * {
+    padding: 2px 4px;
 }
 
 #nav-slider {

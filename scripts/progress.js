@@ -60,6 +60,9 @@ export class Progress {
                 this.changeScreen(i)
             })
             this.buttonContainer.appendChild(btn)
+            this.screens[i].addEventListener('focusin', (e) => {
+                this.changeScreen(i)
+            })
         }
 
         this.changeScreen(0)     
@@ -72,11 +75,20 @@ export class Progress {
      */
     _changeScreenTimeoutId
     /**
+     * The index of the current screen displayed
+     * @type {number} 
+     */
+    currentScreenIndex
+    /**
      * Changes the screen and moves the scrollbar by calling {@link scrollProgressBar}.
      * Index should be between 0 to the length of screens
      * @param {number} newScreenIndex 
      */
     changeScreen(newScreenIndex) {
+        if (this.currentScreenIndex == newScreenIndex) {
+            return
+        }
+        this.currentScreenIndex = newScreenIndex
         this.progressSlider.style.setProperty('--value', newScreenIndex * 100 / (this.screens.length-1) + "%")
 
 

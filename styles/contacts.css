@@ -1,0 +1,34 @@
+#contact {
+    width: 100%;
+    min-height: 100px;
+    background: var(--secondary);
+    padding-bottom: 20px;
+}
+
+#contact h3{
+    font-size: 24px;
+    text-align: center;
+}
+
+
+#contact li {
+    font-size: 20px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    padding-top: 10px;
+}
+
+#contact li svg {
+    height: 30px;
+    width: 30px;
+    transition: transform .5s ease;
+}
+
+#contact li:has(a:hover) svg, #contact li:has(a:focus) svg {
+    transform: translateY(-8px);
+}
+
+#contact h3 {
+    padding: 10px;
+}
