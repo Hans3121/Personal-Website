@@ -1,11 +1,11 @@
 #about-me {
-    padding: 2rem;
+    padding: clamp(1rem, 5vw, 3rem);
     height: calc(100% - 125px);
     overflow-y: scroll;
     scroll-behavior: smooth;
 }
 
-#about-me::after {
+/* #about-me::after {
     content: "";
     height: 125px;
     position: fixed;
@@ -14,11 +14,11 @@
     transform: translateY(0);
     background-color: var(--primary);
     transition: all 0.3s ease-in-out;
-
 }
+
 .hide #about-me::after {
     transform: translateY(125px)
-}
+} */
 
 #greetings-bottom-shadow {
     position: absolute;
@@ -29,7 +29,7 @@
 
 
 #about-me * {
-    margin: 2px 0;
+    margin: 5px 0;
 }
 
 #about-me dl, #about-me hr {
@@ -42,4 +42,19 @@
 
 #about-me dd, #about-me li {
     margin-left: 2rem
+}
+
+#contact li {
+    align-items: center;
+}
+
+#contact li svg {
+    height: 30px;
+    width: 30px;
+    transition: transform .5s ease;
+    transform: translateY(11px)
+}
+
+#contact li:has(a:hover) svg, #contact li:has(a:focus) svg {
+    transform: translateY(4px);
 }

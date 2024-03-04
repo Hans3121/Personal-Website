@@ -100,7 +100,7 @@ export class HelloText {
       "Sawatdee",
       "Hallo",
       "Nǐ hǎo",
-      "Yasou",
+      "γειά σου",
       "God dag",
       "Gamarjoba",
       "Aloha",
