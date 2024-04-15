@@ -11,3 +11,15 @@ let screens = document.getElementById("screens") /* See CSS of screens and child
 let buttonContainer = document.getElementsByTagName("nav")[0]
 let progress = new Progress(progressSlider, screens, buttonContainer)
 // progress.changeScreen(1)
+
+
+// Auto scroll based on screen id
+const id = window.location.href.split("#")[1]
+if (id != undefined) {
+    for (let i = 0; i < progress.screens.length; i++) {
+        if (progress.screens[i].id == id) {
+            progress.changeScreen(i)
+            break
+        }
+    }
+}

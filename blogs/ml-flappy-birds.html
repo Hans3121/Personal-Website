@@ -7,6 +7,11 @@
     <meta name="description" content="A blog about my journey starting out in AI by making a simple machine learning program to play flappy birds">
     <link rel="stylesheet" href="./blog.css">
 
+     <!-- JS Code Highlighting CDNS -->
+     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-okaidia.min.css">
+
     <style>
         #crossover-anim {
             --size: min(8vw, 50px);
@@ -84,463 +89,711 @@
     </style>
 </head>
 <body>
-    <div id="top-shading"></div>
-    <h1>Genetic Algorithm on Flappy Birds</h1>
-    <!-- <p>Project started: 15 February 2024 | Project ended: 1 March 2024</p> -->
-    <!-- <small>Disclaimer: This is just documentation of my project. I'm not so sure myself of the facts in this blog but it <u>SHOULD</u> generally be correct, I hope...</small> -->
-    <p>4 March 2024</p>
-    <br>
-    <h4>Access the project on:</h4>
-    <iframe frameborder="0" src="https://itch.io/embed/2556808?linkback=true" width="552" height="167"><a href="https://hanseyang.itch.io/ml-flappy-birds">ML Flappy Birds by Hanseyang</a></iframe>
-    <a href="https://github.com/hans-e-yang/Flappy-Bird-with-Genetic-Algorithm">Github</a>
-    <br>
-    <nav>
-        <p>List of Contents: </p>
-        <ul>
-            <li><a href="#introduction">Introduction</a></li>
-            <li><a href="#modify">Modifying The Birds</a></li>
-            <li><a href="#generating-population">Generating The Population</a></li>
-            <li><a href="#testing-population">Testing The Population</a></li>
-            <li><a href="#gather-results">Gathering The Results</a></li>
-            <li><a href="#genetic-algorithm">The Genetic Algorithm</a></li>
-            <li><a href="#end-result">The End Result</a></li>
-        </ul>
-    </nav>
-
-    <h2 id="introduction">Introduction</h2>
-    <p>
-        I suddenly had the urge to learn AI, after all, it was the currently hottest technology trend.
-        It happened when an interesting youtube video popped up on my recommendations, 
-        <a href="https://www.youtube.com/watch?v=ZiwogMtbjr4&list=PLoROMvodv4rOca_Ovz1DvdtWuz8BfSWL2">a series of lectures from Stanford's CS 221 class</a>, 
-        which broadly is about the introduction to artificial intelligence.
-        It also comes with several problems, some math and some programming in python which is pretty useful to concretize the concepts taught.
-    </p>
-
-    <p>
-        Anyways, after watching several videos, I became interested in making a flappy bird clone that can teach itself to play the game, 
-        mostly inspired by an early video by <a href="https://www.youtube.com/@CodeBullet">CodeBullet</a>, a youtuber whose contents are mostly about creating an AI that can play a specific game.
-    </p>
-
-    <p>
-        I plan to code the whole thing in <a href="https://godotengine.org/">godot</a>, a free, opensource, and extremely lightweight game engine. 
-        I like it since it takes way less time to setup than unity, and takes way less storage space.
-        It may not be the best and most performant, but it works for me 😊, although, using python may be better.
-    </p>
-
-    <div>
-        <p>
-            Before starting the project, I had several things in my mind:
-        </p>
-        <ol>
-            <li>
-                Each bird will decide to jump or not based on an array of weights. 
-                These 'weights' can be thought of as their genetic code and we will attempt to optimize it using the <a href="https://www.youtube.com/watch?v=MacVqujSXWE&pp=ygUfY29tcHV0ZXJwaGlsZSBnZW5ldGljIGFsZ29yaXRobQ%3D%3D">genetic algorithm</a>.
-            </li>
-            <li>
-                At first, we will simply multiply the weights with the horizontal and vertical distance from the bird to the hole of the pipe. Perhaps later, more information would be given to the birds. 
-                <!-- We can even try to give useless information to the birds just to see it converge to 0. -->
-            </li>
-            <li>
-                I should code the genetic algorithm to run as seperately as possible with the game itself 
-                , enabling easier reuse with other projects.
-                <!-- so it would be easy to perhaps add multiple independent "trainers". 
-                We may even train with different types of bird movements to see which 
-                one can go further. -->
-            </li>
-        </ol>
-    </div>
-
-    <p>
-        Just to quickly summarize how the genetic algorithm works, we first randomly initialize the first generation. Then we will test each of the individuals to get a score (or in evolutionary algorithm language: fitness value). 
-        We will then randomly select individuals, with higher priority to higher scoring ones, to breed and generate the individuals for the next generation. 
-        We can then add some mutations to further add variation. This process roughly simulates biological evolution and natural selection.
-    </p>
-    <!-- <p>
-        One thing to keep in mind of when making genetic algorithm is to balance between having a 
-        diverse generation and selecting the best ones to survive. 
-        Focusing too much on selecting can lead to local maximums
-    </p> -->
-    
-    <p>
-        First of all, for the game, you could find godot tutorials on the web. Many of them will teach how to code flappy bird since it is a simple yet popular game.
-        This is what my game looks like.
-    </p>
-    <!-- Game screen -->
-    <img src="./images/Game.png" alt="Flappy Birds clone game screen">
-    <br>
-
-    <h2 id="modify">Modifying The Birds</h2>
-    <p>
-        Now, I will adapt the player/bird so it doesn't jump on input, instead it will calculate if it will jump based on the weights, which will be a list of floats. 
-        <!-- For ease, I will put the calculations every physics frame, but if I ever need to optimize it, I might add a seperate game tick every 1/5th of a second or so to calculate the values. 
-        For now, the variables used will be hard coded in the bird itself, which may not be good code organization. It could be better to seperate the <a href="https://en.wikipedia.org/wiki/Feature_engineering">"feature extractor"</a>
-        on a seperate, utility class, alongside other machine learning related code, but since the scale of the project isn't that large, this should be fine. -->
-    </p>
-    <div class="flex">
-        <figure>
-            <img src="./images/Bird Script before weights.png" alt="Player controlled Bird Script">
-            <figcaption>Bird.gd before editing, bird controlled by player</figcaption>
-        </figure>
-        <figure>
-            <img src="./images/Bird Script after weights.png" alt="Weight based decision making Bird script">
-            <figcaption>Bird.gd after editing and some code reorganization, bird decides to jump or not based on x and y distance to the pipe hole </figcaption>
-        </figure>
-    </div>
-    <p>
-        In the "should_jump" function, I use a simple linear classifier for the decision making.
-    </p>
-    <!-- <p>
-        Actually, to make a simple computer controlled AI flappy bird, just setting the weights to [0, -1] would almost make it work. 
-        So we can make the decision making algorithm of the bird to just jump if its y-position is lower than the hole of the pipes. 
-        <br>
-        So this genetic algorithm may not be that useful..., but it is still interesting to see it in action.
-        So basically, by coding a genetic algorithm, we are doing unnecessary work if our goal is to just create a computer controlled bird, which shows that Flappy Bird is a simple game. <br>
-        But anyways, it would be interesting to see the process of natural selection in action, so I am going to continue it.
-    </p> -->
-
-    <p>
-        In order for the birds to calculate their decisions, they first need data regarding the position of the next pipe, which I plan to provide through the autoloaded (singleton) script "Data".
-        When the pipes are spawned, they will queue themselves in the "Data" class, which then will be accessed by the birds. 
-        We set the birds x position to be about x=100, so we will pop the front of the queue once the first pipe's x position is under 100.
-        <!-- A possible future optimization would be to just provide the time between spawn and the speed of the pipe and let the bird calculate. -->
-        While the game may make it seem that the bird is moving forwards, what is actually happening is that the bird stays in the same x position, while pipes and other decoration move to the left, giving
-        the illusion of the bird moving forward. 
-    </p>
-    <div class="flex">
-        <figure>
-            <img src="./images/Data Class.png" alt="Data autoload class">
-            <figcaption>Data.gd script</figcaption>
-        </figure>
-        <figure>
-            <img src="./images/QueuePipe in pipespawner.png" alt="Spawn Pipe function in the PipeSpawner class">
-            <figcaption>SpawnPipe function in PipeSpawner.gd, highlighting the queuePipe function from "Data"</figcaption>
-        </figure>
-    </div>
-    <br>
-    <h2 id="generating-population">Generating The Population</h2>
-    <div>
-        <p>
-            Now that that's done, we will work on the Trainer class, which will do several things:
-        </p>
-        <ol>
-            <li>Initialize the weights randomly with floats between -10 to 10</li>
-            <li>Spawn several birds as children and give them random weights. When they die, collect the data.</li>
-            <li>Select the best of the birds and "breed" them by mixing their weights</li>
-            <li>Introduce "genetic mutations" by adding random values to the weights</li>
-            <li>Redo the cycle</li>
-            <!-- <li>We will calculate the means as below: <br><img src="./images/calculateWeightMeans.png" alt="Formula used for calculating the weight means"></li> -->
-            <!-- Latex : \overrightarrow{mean} = \frac{\sum_{(\overrightarrow{w},points)\in {birds}}^{}(\overrightarrow{w}\bullet points)}{\sum_{(\overrightarrow{w},points)\in {birds}}^{}points} -->
-            <!-- <li>We will calculate the new deviations as below (absolute deviation): <br><img src="./images/calculateAbsoluteDeviation.png" alt="Formula used for calculating the new deviations"></li> -->
-            <!-- Latex : \overrightarrow{deviation} = \frac{\sum_{(\overrightarrow{w},points)\in {birds}}^{}(|\overrightarrow{w} -\overrightarrow{mean}|)\bullet points)}{\sum_{(\overrightarrow{w},points)\in {birds}}^{}points} -->
-        </ol>
-    </div>
-
-    <figure>
-        <img src="./images/trainer begin.png" alt="Trainer Script">
-        <figcaption>Trainer.gd</figcaption>
-    </figure>
-    
-    <p>
-        So before all of that, here are some variables of the Trainer class
-    </p>
-    <ul>
-        <li>The signals will be used to tell the parent when the training has ended (generation_ended) and when the trainer is ready for the next round (next_generation_ready).</li>
-        <li>'length" indicates the length of the weights vector/array. The value should be set according to the weights used by the Bird class</li>
-        <li>"generation_size" indicates the amount of birds the trainer will spawn every generation</li>
-        <li>"weights" is a 2D array containing individual weights (The genetic code) of each bird, each with the length of the "length" variable </li>
-        <li>
-            The "results" will contain the score and weights of every individual bird.
-        </li>
-    </ul>
-
-    <div class="flex">
-        <figure>
-            <img src="./images/trainer initialize weights.png" alt="Trainer Class initialize weights function">
-            <figcaption>Trainer.gd - Initialize weights once on ready, with each weight being a float between -10 and 10.</figcaption>
-        </figure>
-        <figure>
-            <img src="./images/trainer prepare next generation.png" alt="Trainer Class prepare next generation function">
-            <figcaption>Trainer.gd - prepare_next_generation function </figcaption>
-        </figure>
-    </div>
-
-    <p>
-        When running the code, the error message told me to use "call_deferred" on "add_child" instead of calling "add_child" directly.
-        I wasn't too sure what it does, so I looked it up. Based on the documentation, "call_deferred" will execute the function during idle time in the same frame, after the engine calculates process and physics process frames (similar to Update() and FixedUpdate() in Unity).
-        <br><br>
-        So, perhaps the reason it produced an error message may have been related to the many entities being spawned, therefore the error message said to move the calls into the idle time to not cause any weird physics bugs or something.
-    </p>
-
-    <p>
-        Since a lot of new child nodes are created every generation, perhaps the code can be optimized by using <a href="https://www.youtube.com/watch?v=UuEqUN98uZo">object pooling</a>, which I may or may not do.
-        Anyways, for me, doing too much optimization will make it hard to actually finish the project.
-        If we require extra performance in the future, we will handle it in the future. 
-        <!-- Anyways, I may change this part to use object pooling instead if it can help optimize the code, but that is for later. -->
-    </p>
-
-    <br>
-    <h2 id="testing-population">Testing The Population</h2>
-    <p>
-        The "prepare_next_generation" function should be called by the parent of the trainer node. 
-        When it has prepared the next generation, it will emit the "next_generation_ready" signal to tell
-        the parent that it is ready to run. In my case, the parent will be Main.gd. 
-    </p>
-
-    <div class="flex">
-        <figure>
-            <img src="./images/main class trainer signal connections.png" alt="Trainer signal connections on Main class">
-            <figcaption>Main.gd script</figcaption>
-        </figure>
-        <figure>
-            <img src="./images/bird ready function.png" alt="_ready() function on Bird class">
-            <figcaption>Bird.gd script</figcaption>
-        </figure>
-    </div>
-    <p>
-        The "Main" node will be the one controlling the whole game. The "next_generation_ready" signal connects to a function in Main.gd, which will call another signal on the autoloaded "Events" script (singleton) and start spawning the pipes.
-    </p>
-    <p>
-        I made the birds so that it will freeze (their physics won't run) until the "Events.start_generation" signal is called. This ensures everyone starts at the same moment. 
-    </p>
-    <p>
-        We could make the "Trainer" class emit the "Events.start_generation" signal directly, but I like this because it really seperates the "Trainer" from the other segments of the game. 
-        The "Trainer" only needs to concern itself on the training part and the game will be handled seperately.
-    </p>
-    <p>
-        A simpler way to do this may have been to just call "set_deferred("freeze", false)" on all children of the "Trainer".
-        I may have overthought it when writing this code, but I originally wanted to have several "Trainer"s and doing this will
-        enable me to synchonize every "Trainer" to start the same time.
-    </p>
-
-    <br>
-
-    <h2 id="gather-results">Gathering The Results</h2>
-    <p>
-        The birds will attempt to survive with the weights (genetic code) given to them by the "Trainer" and when they die, they will send the score (amount of pipes they passed) and their weights (genetic code).
-        It does this by emitting the "died" signal. The "Trainer" will capture the signal and push it into the "results" array.
-    </p>
-    <div class="flex">
-        <figure>
-            <img src="./images/bird on body entered.png" alt="_on_body_entered() function on Bird class">
-            <figcaption>Bird.gd script</figcaption>
-        </figure>
-        <figure>
-            <img src="./images/trainer prepare next generation.png" alt="prepare_next_generation() function on Trainer class">
-            <br>
-            <img src="./images/trainer record bird.png" alt="record_bird() function on Trainer class">
-            <figcaption>Trainer.gd script</figcaption>
-        </figure>
-    </div>
-    
-    <p>
-        One benefit of this is that the array will always be sorted, because the higher the score, the later they will die and the later they will be pushed into the array.
-        After all the birds have died, the "Trainer" will commence the genetic algorithm.
-    </p>
-
-    <br>
-    <h2 id="genetic-algorithm">The Genetic Algorithm</h2>
-    <p>
-        This is where the machine can "learn" by simulating natural selection. Here, we are going to build
-        a basic genetic algorithm. This is the general code to do that.
-    </p>
-
-    <figure>
-        <img src="./images/trainer calculate next generation weights.png" alt="calculate_next_generation_weights() function on Trainer class">
-        <figcaption>Trainer.gd script</figcaption>
-    </figure>
-
-    <p>
-        First of all, I introduce "elitism". It refers to the practice of keeping some of the best performing 
-        individuals to prevent the next generation from becoming worse. <br>
-        Then, I will refill the population by looping over the process of selection, crossover (breeding), and mutation.
-    </p>
-
-    <h3>Selection</h3>
-    <figure>
-        <img src="./images/trainer select.png" alt="select() function on Trainer class">
-        <figcaption>Trainer.gd script - Select suitable parents for the next generation</figcaption>
-    </figure>
-    <p>
-        This method of selection is called <a href="https://en.wikipedia.org/wiki/Tournament_selection">Tournament Selection</a>.
-        The selection algorithm works by choosing <i>'tournament_size'</i> amounts of parents and then doing a 'tournament' between them. 
-        The one with the highest score will win the tournament. To make the algorithm less deterministic and add randomness, we add a <i>'selection_p'</i> variable, which is the probability that the higher score will be chosen.
-        With this, we give a chance for the less fit to be chosen.
-    </p>
-
-    <p>
-        <i>'tournament_size'</i> and <i>'selection_p'</i> are parameters that can and should be adapted based on individual cases. Most of these parameters are adjusted
-        to balance between exploration and exploitation, to maintain a diverse population while also keeping the best individuals.
-    </p>
-
-    <p>
-        Originally, when I first wrote the selection function, I made what's called as a <a href="https://en.wikipedia.org/wiki/Fitness_proportionate_selection">Roulette Selection</a>. 
-        The selection method can be imagined as spinning a roulette wheel where the area of the slice is proportional to the score achieved.
-        After some googling, I found out that Tournament Selection is more often used and considered better, so I changed it. 
-        <br>
-        This is also somewhat better than my implementation of the Roulette Selection as its time complexity was <i>O(generation_size)</i> each time 
-        it selects a parent, compared to the current Tournament Selection that runs on <i>O(tournament_size)</i>. Wikipedia says that <i>O(log n)</i> or <i>O(1)</i> should be possible for Roulette Selection, it was just my original implementation that was bad.
-    </p>
-    
-    <h3>Crossover</h3>
-    <figure>
-        <img src="./images/trainer breed.png" alt="breed() function on Trainer class">
-        <figcaption>Trainer.gd script - Single Point Cross Over</figcaption>
-    </figure>
-    <p>
-        Similar to the selection function, I started out with a quite unsuitable crossover method for our purposes. In Single Point Cross Over,
-        2 parents will generate 2 offsprings where in one offspring, the first several weights will be inherited from parent A, and the rest from parent B. The other offspring will have the opposite. 
-    </p>
-    <figure>
-        <div id="crossover-anim" aria-label="single point crossover animation">
-            <div id="crossover-anim-1"></div>
-            <div id="crossover-anim-2"></div>
-            <div id="crossover-anim-3"></div>
-            <div id="crossover-anim-4"></div>
+    <div id="content">
+        <div id="top-shading">
+            <a href="../index.html#blog">< Back</a>
         </div>
-        <figcaption>Animation of single point crossover</figcaption>
-    </figure>
-    <p>
-        This works on binary arrays, whose values are only 1s and 0s, but not so much on real values. 
-        Doing this on floats will restrict the exploration space to only a few points.
-    </p>
-    <p>
-        Instead, we should use <a href="http://www.geatbx.com/docu/algindex-03.html">intermediate recombination</a>. 
-    </p>
-    <figure>
-        <img src="./images/trainer intermediate recombination.png" alt="new breed() function on Trainer class">
-        <figcaption>Trainer.gd script - Intermediate recombination</figcaption>
-    </figure>
-    <p>
-        This method determines the child values by doing a linear interpolation from the parent's values and thus, the child has way more potential values compared to only copying either from parentA or parentB.
-    </p>
 
-    <h3>Mutation</h3>
-    <p>
-        For the last piece of code to mimic natural reproduction, we need to introduce some randomness or mutation. 
-        In this case, I just use a simple uniform mutation.
-    </p>
-    <figure>
-        <img src="./images/trainer mutate.png" alt="new breed() function on Trainer class">
-        <figcaption>Trainer.gd script - mutation</figcaption>
-    </figure>
-    <p>
-        For every value in the weights, there is a <i>'mutation_chance'</i> chance to change the value between <i>'mutation limit'</i>.
-    </p>
-    <p>
-        The constants in this function can be tweaked to encourage or discourage mutation. We can also edit the function so that it mutates less the longer the algorithm runs for. However, for now, this should be enough.  
-    </p>
-    <p>
-        Unlike the previous functions, this one doesn't need to return any values since no new weights are created, instead it directly changes the values of the weights in place. 
-    </p>
+        <section>
+            <h1>Genetic Algorithm on Flappy Birds</h1>
+            <!-- <p>Project started: 15 February 2024 | Project ended: 1 March 2024</p> -->
+            <!-- <small>Disclaimer: This is just documentation of my project. I'm not so sure myself of the facts in this blog but it <u>SHOULD</u> generally be correct, I hope...</small> -->
+            <p>4 March 2024</p>
+            <br>
+            <h4>Access the project on:</h4>
+            <iframe frameborder="0" src="https://itch.io/embed/2556808?linkback=true" width="208" height="167"><a href="https://hanseyang.itch.io/ml-flappy-birds">ML Flappy Birds by Hanseyang</a></iframe>
+            <a href="https://github.com/hans-e-yang/Flappy-Bird-with-Genetic-Algorithm">Github</a>
+            <br>
+            <nav>
+                <p>List of Contents: </p>
+                <ul>
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#modify">Modifying The Birds</a></li>
+                    <li><a href="#generating-population">Generating The Population</a></li>
+                    <li><a href="#testing-population">Testing The Population</a></li>
+                    <li><a href="#gather-results">Gathering The Results</a></li>
+                    <li><a href="#genetic-algorithm">The Genetic Algorithm</a></li>
+                    <li><a href="#end-result">The End Result</a></li>
+                </ul>
+            </nav>
+        </section>
+        
 
-    <h2 id="end-result">The End Result</h2>
-    <figure>
-        <video src="./images/Gameplay 1.mp4" controls></video>
-        <figcaption>Flappy Birds with Machine Learning</figcaption>
-    </figure>
+        <!-- Intro -->
+        <section>
+            <h2 id="introduction">Introduction</h2>
+            <p>
+                I suddenly had the urge to learn AI, after all, it was the currently hottest technology trend.
+                It happened when an interesting youtube video popped up on my recommendations,
+                <a href="https://www.youtube.com/watch?v=ZiwogMtbjr4&list=PLoROMvodv4rOca_Ovz1DvdtWuz8BfSWL2">a series of lectures from Stanford's CS 221 class</a>,
+                which broadly is about the introduction to artificial intelligence.
+                It also comes with several problems, some math and some programming in python which is pretty useful to concretize the concepts taught.
+            </p>
+            <p>
+                Anyways, after watching several videos, I became interested in making a flappy bird clone that can teach itself to play the game,
+                mostly inspired by an early video by <a href="https://www.youtube.com/@CodeBullet">CodeBullet</a>, a youtuber whose contents are mostly about creating an AI that can play a specific game.
+            </p>
+            <p>
+                I plan to code the whole thing in <a href="https://godotengine.org/">godot</a>, a free, opensource, and extremely lightweight game engine.
+                I like it since it takes way less time to setup than unity, and takes way less storage space.
+                It may not be the best and most performant, but it works for me 😊, although, using python may be better.
+            </p>
+            <div>
+                <p>
+                    Before starting the project, I had several things in my mind:
+                </p>
+                <ol>
+                    <li>
+                        Each bird will decide to jump or not based on an array of weights.
+                        These 'weights' can be thought of as their genetic code and we will attempt to optimize it using the <a href="https://www.youtube.com/watch?v=MacVqujSXWE&pp=ygUfY29tcHV0ZXJwaGlsZSBnZW5ldGljIGFsZ29yaXRobQ%3D%3D">genetic algorithm</a>.
+                    </li>
+                    <li>
+                        At first, we will simply multiply the weights with the horizontal and vertical distance from the bird to the hole of the pipe. Perhaps later, more information would be given to the birds.
+                        <!-- We can even try to give useless information to the birds just to see it converge to 0. -->
+                    </li>
+                    <li>
+                        I should code the genetic algorithm to run as seperately as possible with the game itself
+                        , enabling easier reuse with other projects.
+                        <!-- so it would be easy to perhaps add multiple independent "trainers".
+                        We may even train with different types of bird movements to see which
+                        one can go further. -->
+                    </li>
+                </ol>
+            </div>
+            <p>
+                Just to quickly summarize how the genetic algorithm works, we first randomly initialize the first generation. Then we will test each of the individuals to get a score (or in evolutionary algorithm language: fitness value).
+                We will then randomly select individuals, with higher priority to higher scoring ones, to breed and generate the individuals for the next generation.
+                We can then add some mutations to further add variation. This process roughly simulates biological evolution and natural selection.
+            </p>
+            <!-- <p>
+                One thing to keep in mind of when making genetic algorithm is to balance between having a
+                diverse generation and selecting the best ones to survive.
+                Focusing too much on selecting can lead to local maximums
+            </p> -->
+            
+            <p>
+                First of all, for the game, you could find godot tutorials on the web. Many of them will teach how to code flappy bird since it is a simple yet popular game.
+                This is what my game looks like.
+            </p>
+            <!-- Game screen -->
+            <img src="./images/ml-flappy-birds/Game.png" alt="Flappy Birds clone game screen">
+        </section>
+        
+        <!-- Modifying the birds -->
+        <section>
+            <h2 id="modify">Modifying The Birds</h2>
+            <p>
+                Now, I will adapt the player/bird so it doesn't jump on input, instead it will calculate if it will jump based on the weights, which will be a list of floats.
+                <!-- For ease, I will put the calculations every physics frame, but if I ever need to optimize it, I might add a seperate game tick every 1/5th of a second or so to calculate the values.
+                For now, the variables used will be hard coded in the bird itself, which may not be good code organization. It could be better to seperate the <a href="https://en.wikipedia.org/wiki/Feature_engineering">"feature extractor"</a>
+                on a seperate, utility class, alongside other machine learning related code, but since the scale of the project isn't that large, this should be fine. -->
+            </p>
+            <div class="flex">
+                
+                <figure>
+                    <pre><code class="language-gdscript">class_name Bird
+extends RigidBody2D
+
+@export var jumpPower := -200
+
+var score := 0 : set = _set_score
+
+func _set_score(newScore: int):
+    score = newScore
+    UiEvents.scoreChanged.emit(newScore)
+
+signal died(score: int)
+
+func _ready() -> void:
+    freeze = true
+
+func _physics_process(_delta: float) -> void:
+    if (Input.is_action_just_pressed("jump")):
+        linear_velocity.y = jumpPower
+
+func die():
+    died.emit(score)
+    queue_free()
+
+func _on_body_entered(body: Node) -> void:
+    if body is Pipes:
+        die()</code></pre>
+                    <figcaption>Bird.gd before editing, bird controlled by player</figcaption>
+                </figure>
+                <figure>
+                    <pre><code class="language-gdscript">class_name Bird
+extends RigidBody2D
+
+signal died(score: int, weights: Array[float])
+
+@export var jumpPower := -200
+
+var score := 0 : set = _set_score
+var weights = [0, 0]
+
+func _ready() -> void:
+    Events.start_generation.connect(func():
+        set_deferred("freeze", false))
+    set_deferred("freeze", true)
+
+func _set_score(newScore: int):
+    score = newScore
+    UiEvents.scoreChanged.emit(newScore)
+
+
+func _physics_process(_delta: float) -> void:
+    if (should_jump()):
+        linear_velocity.y = jumpPower
+
+# Predictor Function
+func should_jump() -> bool:
+    var value := signf(
+        weights[0] * (Data.nextPipePosition.x - global_position.x) +
+        weights[1] * (Data.nextPipePosition.y - global_position.y)
+    )
+    if (value == 1): return true
+    else: return false
+
+func die():
+    died.emit(score, weights)
+    queue_free()
+
+func _on_body_entered(body: Node) -> void:
+    if body is Pipes:
+        die()</code></pre>
+                    <figcaption>Bird.gd after editing and some code reorganization, bird decides to jump or not based on x and y distance to the pipe hole </figcaption>
+                </figure>
+            </div>
+            <p>
+                In the "should_jump" function, I use a simple linear classifier for the decision making.
+            </p>
+            <!-- <p>
+                Actually, to make a simple computer controlled AI flappy bird, just setting the weights to [0, -1] would almost make it work.
+                So we can make the decision making algorithm of the bird to just jump if its y-position is lower than the hole of the pipes.
+                <br>
+                So this genetic algorithm may not be that useful..., but it is still interesting to see it in action.
+                So basically, by coding a genetic algorithm, we are doing unnecessary work if our goal is to just create a computer controlled bird, which shows that Flappy Bird is a simple game. <br>
+                But anyways, it would be interesting to see the process of natural selection in action, so I am going to continue it.
+            </p> -->
+            <p>
+                In order for the birds to calculate their decisions, they first need data regarding the position of the next pipe, which I plan to provide through the autoloaded (singleton) script "Data".
+                When the pipes are spawned, they will queue themselves in the "Data" class, which then will be accessed by the birds.
+                We set the birds x position to be about x=100, so we will pop the front of the queue once the first pipe's x position is under 100.
+                <!-- A possible future optimization would be to just provide the time between spawn and the speed of the pipe and let the bird calculate. -->
+                While the game may make it seem that the bird is moving forwards, what is actually happening is that the bird stays in the same x position, while pipes and other decoration move to the left, giving
+                the illusion of the bird moving forward.
+            </p>
+            <div class="flex">
+                <figure>
+                    <pre><code class="language-gdscript">extends Node2D
+
+var pipeQueue : Array[Pipe] = []
+
+var nextPipePosition := Vector2(1200, 300)
+
+func _physics_process(delta: float) -> void:
+    if (pipeQueue.size() > 0):
+        if (pipeQueue[0].global_position.x < 100):
+            pipeQueue.pop_front()
+        nextPipePosition = pipeQueue[0].global_position
+
+func queuePipe(pipe: Pipe):
+    pipeQueue.push_back(pipe)</code></pre>
+                    <figcaption>Data.gd script</figcaption>
+                </figure>
+                <figure>
+                    <pre><code class="language-gdscript">func _spawn_pipe() -> void:
+    var pipe = pipes.instantiate()
+    add_child(pipe)
+
+    Data.queuePipe(pipe)
+    pipe.speed = pipeSpeed
+    pipe.position.y += randf_range(-200, 200)</code></pre>
+                    <figcaption>SpawnPipe function in PipeSpawner.gd, highlighting the queuePipe function from "Data"</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!-- Generating the population -->
+        <section>
+            <h2 id="generating-population">Generating The Population</h2>
+            <div>
+                <p>
+                    Now that that's done, we will work on the Trainer class, which will do several things:
+                </p>
+                <ol>
+                    <li>Initialize the weights randomly with floats between -10 to 10</li>
+                    <li>Spawn several birds as children and give them random weights. When they die, collect the data.</li>
+                    <li>Select the best of the birds and "breed" them by mixing their weights</li>
+                    <li>Introduce "genetic mutations" by adding random values to the weights</li>
+                    <li>Redo the cycle</li>
+                    <!-- <li>We will calculate the means as below: <br><img src="./images/ml-flappy-birds/calculateWeightMeans.png" alt="Formula used for calculating the weight means"></li> -->
+                    <!-- Latex : \overrightarrow{mean} = \frac{\sum_{(\overrightarrow{w},points)\in {birds}}^{}(\overrightarrow{w}\bullet points)}{\sum_{(\overrightarrow{w},points)\in {birds}}^{}points} -->
+                    <!-- <li>We will calculate the new deviations as below (absolute deviation): <br><img src="./images/ml-flappy-birds/calculateAbsoluteDeviation.png" alt="Formula used for calculating the new deviations"></li> -->
+                    <!-- Latex : \overrightarrow{deviation} = \frac{\sum_{(\overrightarrow{w},points)\in {birds}}^{}(|\overrightarrow{w} -\overrightarrow{mean}|)\bullet points)}{\sum_{(\overrightarrow{w},points)\in {birds}}^{}points} -->
+                </ol>
+            </div>
+            <figure>
+                <pre><code class="language-gdscript">class_name Trainer
+extends Node2D
+
+signal generation_ended
+signal next_generation_ready
+
+@onready var bird := preload("res://Player/Bird.tscn")
+
+# Length of the each weight in the weights array
+var length := 2
+
+# Amount of birds to spawn
+var generation_size := 500
+
+var weights := []
+
+class Result:
+    var score: int
+    var weights: Array[float]
+
+    func _init(_score: int, _weights: Array[float]):
+        score = _score
+        weights = _weights
+
+var results : Array[Result] = []</code></pre>
+                <figcaption>Trainer.gd</figcaption>
+            </figure>
+            
+            <p>
+                So before all of that, here are some variables of the Trainer class
+            </p>
+            <ul>
+                <li>The signals will be used to tell the parent when the training has ended (generation_ended) and when the trainer is ready for the next round (next_generation_ready).</li>
+                <li>'length" indicates the length of the weights vector/array. The value should be set according to the weights used by the Bird class</li>
+                <li>"generation_size" indicates the amount of birds the trainer will spawn every generation</li>
+                <li>"weights" is a 2D array containing individual weights (The genetic code) of each bird, each with the length of the "length" variable </li>
+                <li>
+                    The "results" will contain the score and weights of every individual bird.
+                </li>
+            </ul>
+            <div class="flex">
+                <figure>
+                    <pre><code class="language-gdscript">func initialize_weights() -> void:
+    for i in range(generation_size):
+        var weight : Array[float] = []
+        for j in range(length):
+            weight.push_back(rand_range(-10, 10))
+        weights.push_back(weight)</code></pre>
+                    <figcaption>Trainer.gd - Initialize weights once on ready, with each weight being a float between -10 and 10.</figcaption>
+                </figure>
+                <figure>
+                    <pre><code class="language-gdscript">func prepare_next_generation() -> void:
+    # Reset the results
+    results = []
+
+    # Spawn the generation
+    for weight in weights:
+        var child : Bird = bird.instantiate()
+        child.weights = weight
+        child.died.connect(record_bird)
+        add_child.call_deferred(child)
     
-    <p>
-        Great! It seems to work. 👍
-    </p>
+    next_generation_ready.emit()</code></pre>
+                    <figcaption>Trainer.gd - prepare_next_generation function </figcaption>
+                </figure>
+            </div>
+            <p>
+                When running the code, the error message told me to use "call_deferred" on "add_child" instead of calling "add_child" directly.
+                I wasn't too sure what it does, so I looked it up. Based on the documentation, "call_deferred" will execute the function during idle time in the same frame, after the engine calculates process and physics process frames (similar to Update() and FixedUpdate() in Unity).
+                <br><br>
+                So, perhaps the reason it produced an error message may have been related to the many entities being spawned, therefore the error message said to move the calls into the idle time to not cause any weird physics bugs or something.
+            </p>
+            <p>
+                Since a lot of new child nodes are created every generation, perhaps the code can be optimized by using <a href="https://www.youtube.com/watch?v=UuEqUN98uZo">object pooling</a>, which I may or may not do.
+                Anyways, for me, doing too much optimization will make it hard to actually finish the project.
+                If we require extra performance in the future, we will handle it in the future.
+                <!-- Anyways, I may change this part to use object pooling instead if it can help optimize the code, but that is for later. -->
+            </p>
+        </section>
 
-    <p>
-        Although, after looking at it and running it multiple times, I find the bird's behaviour to be weird.
-        It always jumps before encountering the pipe hole, which makes sense, but when it is between the pipes, it always seems to jump again, nearly hitting the top pipe.
-        Why would the bird always jump while being in the middle of the pipe? 
-    </p>
+<!-- CHANGE INTO CODE INSTEAD OF IMAGE -->
+        <section>
+            <h2 id="testing-population">Testing The Population</h2>
+            <p>
+                The "prepare_next_generation" function should be called by the parent of the trainer node.
+                When it has prepared the next generation, it will emit the "next_generation_ready" signal to tell
+                the parent that it is ready to run. In my case, the parent will be Main.gd.
+            </p>
+            <div class="flex">
+                <figure>
+                    <pre><code class="language-gdscript">@onready var trainer := $Trainer
+func _on_trainer_next_generation_ready() -> void:
+    Events.start_generation.emit()
+    UiEvents.next_generation.emit()
+    pipeSpawner.start()
 
-    <p>
-        It turns out, this is because of how the bird's decision making.
-    </p>
 
-    <figure>
-        <img src="./images/bird should jump.png" alt="should_jump() function on Bird class">
-        <figcaption>Bird.gd script - should_jump() function</figcaption>
-    </figure>
+func _on_trainer_generation_ended() -> void:
+    Events.end_generation.emit()
+    pipeSpawner.end()
+    trainer.prepare_next_generation()</code></pre>
+                    <figcaption>Main.gd script</figcaption>
+                </figure>
+                <figure>
+                    <pre><code class="language-gdscript">func _ready() -> void:
+Events.start_generation.connect(func():
+    set_deferred("freeze", false))
+set_deferred("freeze", true)</code></pre>
+                    <figcaption>Bird.gd script</figcaption>
+                </figure>
+            </div>
+            <p>
+                The "Main" node will be the one controlling the whole game. The "next_generation_ready" signal connects to a function in Main.gd, which will call another signal on the autoloaded "Events" script (singleton) and start spawning the pipes.
+            </p>
+            <p>
+                I made the birds so that it will freeze (their physics won't run) until the "Events.start_generation" signal is called. This ensures everyone starts at the same moment.
+            </p>
+            <p>
+                We could make the "Trainer" class emit the "Events.start_generation" signal directly, but I like this because it really seperates the "Trainer" from the other segments of the game.
+                The "Trainer" only needs to concern itself on the training part and the game will be handled seperately.
+            </p>
+            <p>
+                A simpler way to do this may have been to just call "set_deferred("freeze", false)" on all children of the "Trainer".
+                I may have overthought it when writing this code, but I originally wanted to have several "Trainer"s and doing this will
+                enable me to synchonize every "Trainer" to start the same time.
+            </p>
+        </section>
 
-    <p>
-        It only looks at the x and y distance to the next pipe and multiplies it by the weights.
-        We can visualize this decision making as such.
-    </p>
-    <figure>
-        <img src="./images/game bird decision making.png" alt="Illustration of the bird's decision making">
-        <figcaption>Illustration of the bird's decision-making</figcaption>
-    </figure>
+        <section>
+            <h2 id="gather-results">Gathering The Results</h2>
+            <p>
+                The birds will attempt to survive with the weights (genetic code) given to them by the "Trainer" and when they die, they will send the score (amount of pipes they passed) and their weights (genetic code).
+                It does this by emitting the "died" signal. The "Trainer" will capture the signal and push it into the "results" array.
+            </p>
+            <div class="flex">
+                <figure>
+                    <pre><code class="language-gdscript">func _on_body_entered(body: Node) -> void:
+    if body is Pipe:
+        died.emit(score, weights)
+        queue_free()</code></pre>
+                    <figcaption>Bird.gd script</figcaption>
+                </figure>
+                <figure>
+                    <pre><code class="language-gdscript">func prepare_next_generation() -> void:
+    # Reset the results
+    results = []
 
-    <p>
-        The decision line's equation is y = -weights[0]/weights[1] * x, and the line always has to pass through the middle of the pipes because that is the origin.
-        The linear equation is missing a constant value that enables it to not have to always pass the origin.
-        <br>
-        So what the genetic algorithm has been trying to do is to spin the line around the point between the pipes to see which would result in the best scores. 
-        Also, because the line always has to pass through the middle of the pipes, the birds in the previous video always tries to jump while being in the middle of the pipes.
-    </p>
+    # Spawn the generation
+    for weight in weights:
+        var child : Bird = bird.instantiate()
+        child.weights = weight
+        child.died.connect(record_bird)
+        add_child.call_deferred(child)
 
-    <p>
-        Looking again at this, it seems like having 2 seperate values might be redundant since they are divided to determine the slope. 
-        Instead, we can use one of the weights to act as the line intercept.
-    </p>
-    
-    <figure>
-        <img src="./images/bird new should jump.png" alt="Improved should_jump() function on bird.gd">
-        <figcaption>Bird.gd - Slightly improved decision making</figcaption>
-    </figure>
-    
-    <p>
-        We should also alter the initialization phase of the weights. Currently, we set each weight to be a random value between -10 and 10. 
-        However, I think that the optimal slope should be around perhaps -3 to 3, 
-        furthermore, the intercept should be allowed to contain higher values as it represents 
-        the offsets in positions in pixels. Therefore, I want the intercept to start with random values between -300 to 300.
-    </p>
-    <figure>
-        <img src="./images/trainer initialization range.png" alt="Initialization range variables on Trainer class">
-        <br>
-        <img src="./images/trainer new initialize weights.png" alt="new initialize_weights() function on Trainer class">
-        <figcaption>Trainer.gd script</figcaption>
-    </figure>
+    next_generation_ready.emit()</code></pre>
+                    <br>
+                    <pre><code class="language-gdscript">func record_bird(score: int, weights: Array):
+    var result := Result.new(score, weights)
+    results.push_back(result)
+    if results.size() >= generation_size:
+        calculate_next_generation_weights()</code></pre>
+                    <figcaption>Trainer.gd script</figcaption>
+                </figure>
+            </div>
+            
+            <p>
+                One benefit of this is that the array will always be sorted, because the higher the score, the later they will die and the later they will be pushed into the array.
+                After all the birds have died, the "Trainer" will commence the genetic algorithm.
+            </p>
+        </section>
 
-    <p>
-        We could also edit the mutation chance to be a percentage of the original initialization range.
-    </p>
 
-    <figure>
-        <img src="./images/trainer new mutate.png" alt="new mutate() function on Trainer class">
-        <figcaption>Trainer.gd - Mutation based on 'initialization_range'</figcaption>
-    </figure>
+        <section>
+            <h2 id="genetic-algorithm">The Genetic Algorithm</h2>
+            <p>
+                This is where the machine can "learn" by simulating natural selection. Here, we are going to build
+                a basic genetic algorithm. This is the general code to do that.
+            </p>
+            <figure>
+                <pre><code class="language-gdscript">func calculate_next_generation_weights():
+    # Elitism. Keeps the top 2% best achiever.
+    # Keeps at least 1 of the best.
+    for i in range(1, generation_size/50 + 2):
+        weights.push_back(results[-i].weights)
 
-    <p>
-        Now, our mutation chance will be based on the length of the weights, so on average, only one value in the weight vector should be mutated.
-        The 'mutation_limit' is now the percentage number of the 'initialization_range' that will be the range of mutation.
-    </p>
+    while weights.size() < generation_size:
+        # Selection and breeding
+        var children = breed(select(), select())
+        # Mutation algorithm
+        for child in children:
+            mutate(child)
+            weights.push_back(child)
 
-    <p>
-        Let us see how the game runs now, after these changes.
-    </p>
-    <figure>
-        <video src="./images/Gameplay 2.mp4" controls></video>
-        <figcaption>Flappy Birds with Machine Learning, slightly improved decision making</figcaption>
-    </figure>
-    <p>
-        Now, the bird's movements should look better compared to the last.
-        However, we can still vaguely observe the decision line of the birds. 
-        That should tell you that the machine learning algorithm here is very very very basic
-        Most of the best birds are due to better decision lines and a lot of luck, since if the bird lands on the decision line too late, they will hit the pipe regardless. 
-        <br>
-        We can increase the complexity of the model by increasing the amount of features, for example the linear velocity of the bird.
+    # Clear any excess weights
+    while weights.size() > generation_size: weights.pop_back()
 
-    </p>
-    <!-- 
-        Perhaps we could add a UI to more easily tweak the algorithm parameters and the environment
-     -->
-    <p>
-        I have added more features and a basic customization screen on the game, which you can try on <a href="https://hanseyang.itch.io/ml-flappy-birds">itch.io</a>.
-    </p>
-    <p>
-        Anyways, this would be the end of this post.
-    </p>
-    
-    
-    <p>Thanks for reading till the end. 👍</p>
+    generation_ended.emit()</code></pre>
+                <figcaption>Trainer.gd script</figcaption>
+            </figure>
+            <p>
+                First of all, I introduce "elitism". It refers to the practice of keeping some of the best performing
+                individuals to prevent the next generation from becoming worse. <br>
+                Then, I will refill the population by looping over the process of selection, crossover (breeding), and mutation.
+            </p>
+            <h3>Selection</h3>
+            <figure>
+                <pre><code class="language-gdscript"># Tournament selection
+    func select() -> Array[float]:
+        var tournament_size : int = generation_size * 0.05
+        const selection_p = .8
+        var parent : Result
 
-    
+        for i in range(tournament_size):
+            var potential_parent = results[randi_range(0, results.size()-1)]
+            if (not parent or (potential_parent.score > parent.score and randf() < selection_p)):
+                parent = potential_parent
+
+        return parent.weights</code></pre>
+                <figcaption>Trainer.gd script - Select suitable parents for the next generation</figcaption>
+            </figure>
+            <p>
+                This method of selection is called <a href="https://en.wikipedia.org/wiki/Tournament_selection">Tournament Selection</a>.
+                The selection algorithm works by choosing <i>'tournament_size'</i> amounts of parents and then doing a 'tournament' between them.
+                The one with the highest score will win the tournament. To make the algorithm less deterministic and add randomness, we add a <i>'selection_p'</i> variable, which is the probability that the higher score will be chosen.
+                With this, we give a chance for the less fit to be chosen.
+            </p>
+            <p>
+                <i>'tournament_size'</i> and <i>'selection_p'</i> are parameters that can and should be adapted based on individual cases. Most of these parameters are adjusted
+                to balance between exploration and exploitation, to maintain a diverse population while also keeping the best individuals.
+            </p>
+            <p>
+                Originally, when I first wrote the selection function, I made what's called as a <a href="https://en.wikipedia.org/wiki/Fitness_proportionate_selection">Roulette Selection</a>.
+                The selection method can be imagined as spinning a roulette wheel where the area of the slice is proportional to the score achieved.
+                After some googling, I found out that Tournament Selection is more often used and considered better, so I changed it.
+                <br>
+                This is also somewhat better than my implementation of the Roulette Selection as its time complexity was <i>O(generation_size)</i> each time
+                it selects a parent, compared to the current Tournament Selection that runs on <i>O(tournament_size)</i>. Wikipedia says that <i>O(log n)</i> or <i>O(1)</i> should be possible for Roulette Selection, it was just my original implementation that was bad.
+            </p>
+            
+            <h3>Crossover</h3>
+            <figure>
+                <pre><code class="language-gdscript">#Single point crossover
+func breed(parentA: Array[float], parentB: Array[float]) -> Array:
+	var childA = []
+	var childB = []
+	var length = min(parentA.size(), parentB.size())
+	var index = randi_range(1, length-1)
+	for i in range(length):
+		childA.push_back(parentA[i] if (i < index) else parentB[i])
+		childB.push_back(parentB[i] if (i < index) else parentA[i])
+	return [childA, childB]</code></pre>
+                <figcaption>Trainer.gd script - Single Point Cross Over</figcaption>
+            </figure>
+            <p>
+                Similar to the selection function, I started out with a quite unsuitable crossover method for our purposes. In Single Point Cross Over,
+                2 parents will generate 2 offsprings where in one offspring, the first several weights will be inherited from parent A, and the rest from parent B. The other offspring will have the opposite.
+            </p>
+            <figure>
+                <div id="crossover-anim" aria-label="single point crossover animation">
+                    <div id="crossover-anim-1"></div>
+                    <div id="crossover-anim-2"></div>
+                    <div id="crossover-anim-3"></div>
+                    <div id="crossover-anim-4"></div>
+                </div>
+                <figcaption>Animation of single point crossover</figcaption>
+            </figure>
+            <p>
+                This works on binary arrays, whose values are only 1s and 0s, but not so much on real values.
+                Doing this on floats will restrict the exploration space to only a few points.
+            </p>
+            <p>
+                Instead, we should use <a href="http://www.geatbx.com/docu/algindex-03.html">intermediate recombination</a>.
+            </p>
+            <figure>
+                <pre><code class="language-gdscript"># Intermediate recombination
+func breed(parentA: Array[float], parentB: Array[float], child_count = 2) -> Array:
+    var children = []
+    var length = min(parentA.size(), parentB.size())
+    var index = randi_range(1, length-1)
+                
+    # Generate 'child_count' amount of children
+    for k in range(child_count):
+        var child = []
+        # Generate the individual weights of the child
+        for i in range(length):
+            var scaling_factor = randf_range(-0.25, 1.25)
+            var new_gene = parentA[i]*scaling_factor + parentB[i]*(1-scaling_factor)
+            child.push_back(new_gene)
+        children.push_back(child)
+                
+    return children</code></pre>
+                <figcaption>Trainer.gd script - Intermediate recombination</figcaption>
+            </figure>
+            <p>
+                This method determines the child values by doing a linear interpolation from the parent's values and thus, the child has way more potential values compared to only copying either from parentA or parentB.
+            </p>
+
+            <h3>Mutation</h3>
+            <p>
+                For the last piece of code to mimic natural reproduction, we need to introduce some randomness or mutation.
+                In this case, I just use a simple uniform mutation.
+            </p>
+            <figure>
+                <pre><code class="language-gdscript"># Mutation algorithm, modifies the weights in place
+func mutate(weights: Array) -> void:
+    var mutation_chance := 1/length
+    const mutation_limit := 0.1
+
+    for i in range(length):
+        if randf() > mutation_chance:
+            weights[i] += randf_range(-mutation_limit, mutation_limit)</code></pre>
+                <figcaption>Trainer.gd script - mutation</figcaption>
+            </figure>
+            <p>
+                For every value in the weights, there is a <i>'mutation_chance'</i> chance to change the value between <i>'mutation limit'</i>.
+            </p>
+            <p>
+                The constants in this function can be tweaked to encourage or discourage mutation. We can also edit the function so that it mutates less the longer the algorithm runs for. However, for now, this should be enough.
+            </p>
+            <p>
+                Unlike the previous functions, this one doesn't need to return any values since no new weights are created, instead it directly changes the values of the weights in place.
+            </p>
+        </section>
+
+        <section>
+            <h2 id="end-result">The End Result</h2>
+            <figure>
+                <video src="./images/ml-flappy-birds/Gameplay 1.mp4" controls></video>
+                <figcaption>Flappy Birds with Machine Learning</figcaption>
+            </figure>
+            
+            <p>
+                Great! It seems to work. 👍
+            </p>
+            <p>
+                Although, after looking at it and running it multiple times, I find the bird's behaviour to be weird.
+                It always jumps before encountering the pipe hole, which makes sense, but when it is between the pipes, it always seems to jump again, nearly hitting the top pipe.
+                Why would the bird always jump while being in the middle of the pipe?
+            </p>
+            <p>
+                It turns out, this is because of how the bird's decision making.
+            </p>
+            <figure>
+                <pre><code class="language-gdscript"># Predictor function
+func should_jump() -> bool:
+    var value := signf(
+        weights[0] * (Data.nextPipePosition.x - global_position.x) +
+        weights[1] * (Data.nextPipePosition.y - global_position.y)
+    )
+
+    if (value == 1): return true
+    else: return false</code></pre>
+                <figcaption>Bird.gd script - should_jump() function</figcaption>
+            </figure>
+            <p>
+                It only looks at the x and y distance to the next pipe and multiplies it by the weights.
+                We can visualize this decision making as such.
+            </p>
+            <figure>
+                <img src="./images/ml-flappy-birds/game bird decision making.png" alt="Illustration of the bird's decision making">
+                <figcaption>Illustration of the bird's decision-making</figcaption>
+            </figure>
+            <p>
+                The decision line's equation is y = -weights[0]/weights[1] * x, and the line always has to pass through the middle of the pipes because that is the origin.
+                The linear equation is missing a constant value that enables it to not have to always pass the origin.
+                <br>
+                So what the genetic algorithm has been trying to do is to spin the line around the point between the pipes to see which would result in the best scores.
+                Also, because the line always has to pass through the middle of the pipes, the birds in the previous video always tries to jump while being in the middle of the pipes.
+            </p>
+            <p>
+                Looking again at this, it seems like having 2 seperate values might be redundant since they are divided to determine the slope.
+                Instead, we can use one of the weights to act as the line intercept.
+            </p>
+            
+            <figure>
+                <pre><code class="language-gdscript"># Predictor function
+func should_jump() -> bool:
+    var value := signf(
+        weights[0] * (Data.nextPipePosition.x - global_position.x) -
+        (Data.nextPipePosition.y - global_position.y) +
+        weights[1]
+    )</code></pre>
+                <figcaption>Bird.gd - Slightly improved decision making</figcaption>
+            </figure>
+            
+            <p>
+                We should also alter the initialization phase of the weights. Currently, we set each weight to be a random value between -10 and 10.
+                However, I think that the optimal slope should be around perhaps -3 to 3,
+                furthermore, the intercept should be allowed to contain higher values as it represents
+                the offsets in positions in pixels. Therefore, I want the intercept to start with random values between -300 to 300.
+            </p>
+            <figure>
+                <pre><code class="language-gdscript"># Range of initialization for each weight
+var initialization_range := [3, 300]
+var default_initialization_range := 100</code></pre>
+                <br>
+                <pre><code class="language-gdscript">func initialize_weights() -> void:
+	for i in range(generation_size):
+		var weight : Array[float] = []
+
+		for j in range(length):
+			var weight_range = (initialization_range[j]
+				if j < initialization_range.size()
+				else default_initialization_range)
+
+			weight.push_back(randf_range(-weight_range, weight_range))
+
+		weights.push_back(weight)</code></pre>
+                <figcaption>Trainer.gd script</figcaption>
+            </figure>
+            <p>
+                We could also edit the mutation chance to be a percentage of the original initialization range.
+            </p>
+            <figure>
+                <pre><code class="language-gdscript">func mutate(weights: Array) -> void:
+	var mutation_chance := 1/length
+	const mutation_limit := 0.1
+
+	for i in range(length):
+		if randf() > mutation_chance:
+			var mutation_range : float = (initialization_range[i]
+				if i < initialization_range.size()
+				else default_initialization_range) * mutation_limit
+
+			weights[i] += randf_range(-mutation_range, mutation_range)</code></pre>
+                <figcaption>Trainer.gd - Mutation based on 'initialization_range'</figcaption>
+            </figure>
+            <p>
+                Now, our mutation chance will be based on the length of the weights, so on average, only one value in the weight vector should be mutated.
+                The 'mutation_limit' is now the percentage number of the 'initialization_range' that will be the range of mutation.
+            </p>
+            <p>
+                Let us see how the game runs now, after these changes.
+            </p>
+            <figure>
+                <video src="./images/ml-flappy-birds/Gameplay 2.mp4" controls></video>
+                <figcaption>Flappy Birds with Machine Learning, slightly improved decision making</figcaption>
+            </figure>
+            <p>
+                Now, the bird's movements should look better compared to the last.
+                However, we can still vaguely observe the decision line of the birds.
+                That should tell you that the machine learning algorithm here is very very very basic
+                Most of the best birds are due to better decision lines and a lot of luck, since if the bird lands on the decision line too late, they will hit the pipe regardless.
+                <br>
+                We can increase the complexity of the model by increasing the amount of features, for example the linear velocity of the bird.
+            </p>
+            <!--
+                Perhaps we could add a UI to more easily tweak the algorithm parameters and the environment
+             -->
+            <p>
+                I have added more features and a basic customization screen on the game, which you can try on <a href="https://hanseyang.itch.io/ml-flappy-birds">itch.io</a>.
+            </p>
+            <p>
+                Anyways, this would be the end of this post.
+            </p>
+            
+            
+            <p>Thanks for reading till the end. 👍</p>
+        </section>
+        
+    </div>
 </body>
 </html>

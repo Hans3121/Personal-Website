@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Commenting App</title>
+    <meta name="description" content="Blog description">
+    <link rel="stylesheet" href="../blog.css">
+
+    <!-- File tree styling -->
+    <script src="../../scripts/fileTree/fileTree.js"></script>
+    <link rel="stylesheet" href="../../scripts/fileTree/styles.css">
+
+    <!-- JS Code Highlighting CDNS -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-okaidia.min.css">
+
+    <!-- Additional styles for the folder structure -->
+    <script>
+        const folderUrl = "../images/other/folder.svg"
+        const fileUrl = "../images/other/file.svg"
+        const rootProjectFolder = {
+            name: "Course Commenting Web App",
+            fileContents: [
+                {
+                    name: "frontend",
+                    fileContents: []
+                }, {
+                    name: "backend",
+                    fileContents: []
+                }
+            ]
+        }
+        const backendFolder = {
+            name: "backend",
+            fileContents: [{
+                name: "node_modules",
+                fileContents: []
+            }, {
+                name: "package.json"
+            }, {
+                name: "package-lock.json"
+            }, {
+                name: "index.js",
+                highlight: true
+            }]
+        }
+        const frontendIndex = {
+            name: "frontend",
+            fileContents: [{
+                name: "node_modules",
+                fileContents: []
+            }, {
+                name: "public",
+                fileContents: []
+            }, {
+                name: "src",
+                fileContents: [{
+                    name: "App.css"
+                }, {
+                    name: "App.js",
+                    highlight: true,
+                }, {
+                    name: "...others"
+                }]
+            }, {
+                name: ".gitignore"
+            }, {
+                name: "package-lock.json"
+            }, {
+                name: "package.json"
+            }, {
+                name: "README.md"
+            }]
+        }
+        const courseListFile = JSON.parse(JSON.stringify(frontendIndex))
+        courseListFile.fileContents[2].fileContents = [
+            {
+                name: "courseList",
+                fileContents: [{name: "CourseList.js", highlight: true}]
+            },
+            ...courseListFile.fileContents[2].fileContents
+        ]
+        courseListFile.fileContents[2].fileContents[2].highlight = false
+
+        document.addEventListener("DOMContentLoaded", ()=>{
+            createFileTree(document.querySelectorAll("div.root-project-folder"), rootProjectFolder)
+            createFileTree(document.querySelectorAll("div.express"), backendFolder)
+            createFileTree(document.querySelectorAll("div.react-appjs"), frontendIndex)
+            createFileTree(document.querySelectorAll("div.course-list"), courseListFile)
+        })
+    </script>
+</head>
+<body>
+    <div id="content">
+        <div id="top-shading">
+            <a href="../../index.html#blog">< Back</a>
+        </div>
+
+        <!-- Header -->
+        <section>
+            <h1>Course Commenting Web App with ReactJS and ExpressJS</h1>
+            <!-- Started on 15 April 2024 -->
+            <p>15 April 2024</p>
+            <br>
+            <h4>Access the project on:</h4>
+            <a href="">Github</a>
+            <br>
+            <nav>
+                <p>List of Contents: </p>
+                <ul>
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#react">Setting up ReactJS</a></li>
+                    <li><a href="#express">Setting up NodeJS and ExpressJS</a></li>
+                    <li><a href="#restapi">Simple REST API</a></li>
+                    <li><a href="#basic-ui">Making the UI</a></li>
+                </ul>
+            </nav>
+        </section>
+
+        <!-- Introduction -->
+        <section>
+            <h2 id="introduction">Introduction</h2>
+            <p>
+                This series will provide a tutorial on making a full stack web app with 
+                <a href="https://react.dev/">ReactJS</a> for the frontend and 
+                <a href="https://expressjs.com/">ExpressJS with NodeJS</a> for the backend.
+                Finally, we will use <a href="https://www.sqlite.org/">SQLite</a> for the database.
+                The web app we make will be a simple basic anonymous commenting app which will roughly
+                demonstrate how a full stack web app will generally be structured, 
+                at least how I usually do it, which I also hope to be the generally correct way.
+                
+                <br>
+                I suppose this series will assume some familiarity with Javascript, but it shouldn't be
+                necessary to have prior experience with the other tools. I would highly recommend watching these videos
+                to get an idea of what these things does: 
+            </p>
+            <ul>
+                <li><a href="https://www.youtube.com/watch?v=ENrzD9HAZK4">NodeJS</a></li>
+                <li><a href="https://www.youtube.com/watch?v=Tn6-PIqc4UM">ReactJS</a></li>
+                <li><a href="https://www.youtube.com/watch?v=-MTSQjw5DrM">ExpressJS and REST APIs</a></li>
+                <li><a href="https://www.youtube.com/watch?v=zsjvFFKOm3c">SQL</a></li>
+                <li>Generally other of his videos</li>
+            </ul>
+            <p>
+                I will link many documentation links along this guide. It is highly recommended to check out 
+                these documentation to learn more about what actually happens.
+                I don't explain much details as I don't really know it myself until I read the documentation.
+                My plan for this guide is to make a minimal full stack web app
+                to provide an overview of how such a web app might work and how the components might interact with each other.
+
+            </p>
+
+            <p>
+                Before starting the project, do make sure that <a href="https://nodejs.org/en/download">NodeJS</a> is installed 
+                and make sure <a href="https://www.npmjs.com/">npm</a> (Node Package Manager) is available in your system. 
+            </p>
+        </section>
+
+        <!-- React -->
+        <section>
+            <h2 id="react">Setting up React</h2>
+            <p>
+                Let us start by setting up the frontend side. In your project root folder, make 2 folders
+                for the frontend and backend. 
+            </p>
+
+            <figure>
+                <div class="root-project-folder"></div>
+                <figcaption>File Structure</figcaption>
+            </figure>
+            
+            <p>
+                We will now install ReactJS in the FrontEnd folder. To do this, run the following.
+            </p>
+
+            <figure>
+                <pre style="white-space: pre;"><code class="language-sh">npx create-react-app ./
+npm start</code></pre>
+
+                <figcaption>Setting up ReactJS</figcaption>
+            </figure>
+
+            <p>
+                You should now be able to see the initial ReactJS Screen 🥳
+            </p>
+
+            <figure>
+                <img src="./images/reactScreen.png" alt="Initial ReactJS Screen">
+                <figcaption>If you are having troubles, try reading <a href="https://create-react-app.dev/docs/getting-started">this</a></figcaption>
+            </figure>
+        </section>
+        
+        <!-- ExpressJS -->
+        <section>
+            <h2 id="express">Setting Up NodeJS and ExpressJS</h2>
+            <p>
+                Next, we will install ExpressJS. First, change your directory to backend. 
+                Then, run the following code.
+            </p>
+
+            <figure>
+                <pre><code class="language-sh">npm init
+npm install express</code></pre>
+                <figcaption>Read the <a href="https://expressjs.com/en/starter/installing.html">Express documentation</a> for more information. Feel free to fill out the fields as you like.</figcaption>
+            </figure>
+
+            <p>
+                Then, make a file <code>index.js</code> or any other file name you specified when 
+                installing Express in the backend folder and fill in the following.
+            </p>
+
+            <figure>
+                <div class="express"></div>
+                <pre><code class="language-js">const express = require("express")
+const app = express()
+const port = 3001
+
+app.get("/", (req, res) => {
+    res.send("Hello world!")
+})
+
+app.listen(port, () => {
+    console.log(`Course Commenting Web App BackEnd listening on port ${port}`)
+})</code></pre>
+            <figcaption>
+                Read the <a href="https://expressjs.com/en/starter/hello-world.html">documentation</a> for more info</figcaption>
+            </figure>
+
+            <p>
+                Also, if you are using git, don't forget to create a <code>.gitignore</code> file
+                and write <code>/node_modules</code> in it. Otherwise the entire node module dependency
+                folder will be tracked by git, which is usually not what we want.
+            </p>
+
+            <p>
+                Now, run express by typing in <code class="language-sh p-1">node index.js</code> in the terminal. 
+                If you then search <code>http://localhost:3001</code> in a web browser, you should get <code>Hello World</code>.
+            </p>
+            <p>
+                If you change the message and restart the browser, you will observe that the message doesn't change
+                unless you rerun the command. To automate this, we can use <code>nodemon</code>.
+            </p>
+            <figure>
+                <pre><code class="language-sh">npm install -g nodemon
+npx nodemon index.js</code></pre>
+                <figcaption>Read more: <a href="https://www.npmjs.com/package/nodemon">nodemon</a></figcaption>
+            </figure>
+        </section>
+        <!-- REST API and CORS -->
+        <section>
+            <h2 id="restapi">Simple REST API</h2>
+            <p>
+                Again, I highly recommend you watch <a href="https://www.youtube.com/watch?v=-MTSQjw5DrM">this video</a>
+                to get a feel of what an API is. Right now, we have a single API route in ExpressJS, by doing a
+                <code>GET</code> request to the <code>'/'</code> route, the server will respond with <code>'Hello World'</code>.
+            </p>
+            <p>
+                Now we will try to call the API from React. One way to do that is to use the native <code>fetch</code> API provided by browsers.
+            </p>
+
+            <figure>
+                <div class="react-appjs"></div>
+                <pre><code class="language-js">function App(){
+    fetch("http://localhost:3001")
+        .then(async (res) => {
+            console.log(await res.text())
+        })
+        .catch(err => console.error(err))  
+    ...
+}</code></pre>
+                <figcaption>Read more: <a href="https://developer.mozilla.org/en-US/docs/Web/API/fetch"><code>fetch()</code></a></figcaption>
+            </figure>
+
+            <p>
+                This code should fetch data from the backend once when the component is mounted and then
+                print it out into the console. However, the console instead prints out this error message.
+            </p>
+
+            <figure>
+                <code class="language-txt p-4">Access to fetch at 'http://localhost:3001/' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.</code>
+                <figcaption>Watch more: <a href="https://www.youtube.com/watch?v=4KHiSt0oLJ0">CORS</a></figcaption>
+            </figure>
+
+            <p>
+                CORS is a security policy enforced by the browser. When the server <a href="https://developer.mozilla.org/en-US/docs/Glossary/Origin">origin</a> is different from the client 
+                <a href="https://developer.mozilla.org/en-US/docs/Glossary/Origin">origin</a>, 
+                it will check the server response if it allows the site to receive data from the server.
+                Since we haven't set anything in the server, the browser will by default reject the request.
+            </p>
+            <p>
+                So lets now set the CORS policy in ExpressJS.
+            </p>
+
+            <figure>
+                <pre><code class="language-sh"> npm install cors </code></pre>
+                <figcaption>Install <a href="https://expressjs.com/en/resources/middleware/cors.html">
+                    Express CORS Middleware
+                </a> on the Backend folder</figcaption>
+            </figure>
+            <figure>
+                <div class="express"></div>
+                <pre><code class="language-js">...
+const cors = require("cors")
+...
+app.use(cors({origin: "http://localhost:3000"}))
+...</code></pre>
+                <figcaption>Add CORS headers</figcaption>
+            </figure>
+
+            <p>
+                If you refresh the React App, you should now see <code>Hello world!</code> in the console.
+                We have successfully enabled communication between the frontend React app and backend Express app.
+            </p>
+        </section>
+        <!-- Basic UI -->
+        <section>
+            <h2 id="basic-ui">Basic UI</h2>
+            <p>
+                In this section, we will begin working on the UI with React.
+                I am going to start by making a <code>CourseList</code> component.
+                This component will get the course list from the backend, show it to the user, 
+                and allow the user to select a course to check its reviews.
+            </p>
+
+            <figure>
+                <div class="course-list"></div>
+                <pre><code class="language-jsx">import { useState, useEffect } from 'react'
+
+// Callback Function prop
+function CourseList({onCourseSelected}) {
+    // Create a state variable containing the course list
+    // JS destructuring assignment
+    const [courses, setCourses] = useState(initialCourses)
+
+    // Gets the course list from the backend
+    // After the initial render, call the API route and update the 'courses' state
+    useEffect(()=>{
+        fetch("http://localhost:3001/courseList")
+            .then(async (res) => {
+                setCourses(await res.json())
+            })
+    }, []) // Empty dependency array, only run it once
+
+    return (
+        &lt;div>
+            {/*Map objects in the 'courses' state variable into HTML button tags*/}
+            {courses.map(course => (
+                &lt;button
+                    // Runs the passed function on click
+                    onClick={()=>{onCourseSelected(course.name)}} 
+                    key={course.name}>
+                    {course.name}
+                &lt;/button>
+            ))}
+        &lt;/div>
+    )
+}
+
+export default CourseList</code></pre>
+                <figcaption>Read more: <a href="https://react.dev/reference/react/useState"><code>useState()</code></a></figcaption>
+                <figcaption>Read more: <a href="https://react.dev/learn/synchronizing-with-effects#fetching-data"><code>useEffect()</code></a></figcaption> 
+                <figcaption>Read more: <a href="https://www.robinwieruch.de/react-hooks-fetch-data/">Fetching data in <code>useEffect()</code></a></figcaption>
+                <figcaption>Read more: <a href="https://react.dev/learn/passing-props-to-a-component">Passing props</a></figcaption>
+            </figure>
+
+            <p>
+                The component calls an API to '/courseList', which we are now going to define.
+            </p>
+
+            <figure>
+                <div class="express"></div>
+                <pre><code class="language-js">...
+app.get('/courseList', (req, res)=>{
+    // Hard code it for now, since we don't have a database yet
+    res.send([{name: "CS101"}, {name: "MA101"}, {name: "PHY101"}])
+})
+...</code></pre>
+            </figure>
+
+            <p>
+                Finally, we are going to use this component in <code>App.js</code>.
+                I also removed the default tags provided by React.
+            </p>
+            <figure>
+                <div class="react-appjs"></div>
+                <pre><code class="language-jsx">import CourseList from './courseList/CourseList'
+import './App.css'
+
+function App() {
+    return (
+        {/* Pass in a function to the component */}
+        &lt;CourseList onCourseSelected={console.log} />
+    )
+} </code></pre>
+            </figure>
+
+            <p>
+                Now, the React app should have 3 buttons and when you click the buttons,
+                the console will print out the course names.
+            </p>
+
+            <figure>
+                <img class="border" src="./images/CourseList.png" alt="Course List buttons with console Screenshot">
+                <figcaption><code>App.js</code></figcaption>
+            </figure>
+            
+            <p>
+                Later, the function we pass will update a state which will then
+                cause the reviews list for that particular course to be displayed.
+                Before that, let us set up the database
+            </p>
+        </section>
+        <a href="2.html">Next page ⏭️</a>
+    </div>
+</body>
+</html>

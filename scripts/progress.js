@@ -63,6 +63,10 @@ export class Progress {
             this.screens[i].addEventListener('focusin', (e) => {
                 this.changeScreen(i)
             })
+            this.screens[i].addEventListener('focus', (e) => {
+                // this.changeScreen(i)
+                console.log("HI")
+            })
         }
 
         this.changeScreen(0)     

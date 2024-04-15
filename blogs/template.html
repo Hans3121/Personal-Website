@@ -3,20 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog title</title>
+    <title>Blog Template</title>
     <meta name="description" content="Blog description">
     <link rel="stylesheet" href="./blog.css">
 </head>
 <body>
-    <div id="top-shading"></div>
-    <h1>Title</h1>
-    <p>Project started:  | Project ended: </p>
-    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Distinctio cupiditate eaque, aut doloribus perferendis amet illum iste beatae at! Quasi, aliquid labore. Ad doloribus ut cupiditate beatae. Iste, ad voluptatum?</p>
-    <figure>
-        <img src="image" alt="Image alt">
-        <figcaption>Image caption</figcaption>
-    </figure>
-    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ab, inventore! Vitae dolorem sapiente accusantium voluptatem tempore? Tempora, ea? Architecto debitis commodi quia eligendi magni modi excepturi itaque ipsam accusamus maxime!</p>
-    
+    <div id="content">
+        <div id="top-shading">
+            <a href="../index.html#blog">< Back</a>
+        </div>
+        <h1>Template</h1>
+        <!-- Started on 8 March -->
+        <p>4 March 2024</p>
+        <br>
+        <h4>Access the project on:</h4>
+        
+        <a href="">Github</a>
+        <br>
+        <nav>
+            <p>List of Contents: </p>
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#modify">Modifying The Birds</a></li>
+                <li><a href="#generating-population">Generating The Population</a></li>
+                <li><a href="#testing-population">Testing The Population</a></li>
+                <li><a href="#gather-results">Gathering The Results</a></li>
+                <li><a href="#genetic-algorithm">The Genetic Algorithm</a></li>
+                <li><a href="#end-result">The End Result</a></li>
+            </ul>
+        </nav>
+        <h2 id="introduction">Introduction</h2>
+        <p>
+            I suddenly had the urge to learn AI, after all, it was the currently hottest technology trend.
+            It happened when an interesting youtube video popped up on my recommendations,
+            <a href="https://www.youtube.com/watch?v=ZiwogMtbjr4&list=PLoROMvodv4rOca_Ovz1DvdtWuz8BfSWL2">a series of lectures from Stanford's CS 221 class</a>,
+            which broadly is about the introduction to artificial intelligence.
+            It also comes with several problems, some math and some programming in python which is pretty useful to concretize the concepts taught.
+        </p>
+        
+        <div>
+            <p>
+                List
+            </p>
+            <ol>
+                <li>Thing 1</li>
+                <li>Thing 1</li>
+            </ol>
+        </div>
+        
+        <!-- Image -->
+        <img src="./images/ml-flappy-birds/Game.png" alt="Flappy Birds clone game screen">
+        <br>
+        <h2 id="modify">Modifying The Birds</h2>
+        
+        <!-- Several Images -->
+        <div class="flex">
+            <figure>
+                <img src="./images/ml-flappy-birds/Bird Script before weights.png" alt="Player controlled Bird Script">
+                <figcaption>Bird.gd before editing, bird controlled by player</figcaption>
+            </figure>
+            <figure>
+                <img src="./images/ml-flappy-birds/Bird Script after weights.png" alt="Weight based decision making Bird script">
+                <figcaption>Bird.gd after editing and some code reorganization, bird decides to jump or not based on x and y distance to the pipe hole </figcaption>
+            </figure>
+        </div>
+        
+        <!-- Single image in figure -->
+        <figure>
+            <img src="./images/ml-flappy-birds/trainer begin.png" alt="Trainer Script">
+            <figcaption>Trainer.gd</figcaption>
+        </figure>
+        
+        
+        <p>
+            Anyways, this would be the end of this post.
+        </p>
+        
+        
+        <p>Thanks for reading till the end. 👍</p>
+        
+    </div>
 </body>
 </html>
