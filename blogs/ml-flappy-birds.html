@@ -120,8 +120,8 @@
         
 
         <!-- Intro -->
-        <section>
-            <h2 id="introduction">Introduction</h2>
+        <section id="introduction">
+            <h2>Introduction</h2>
             <p>
                 I suddenly had the urge to learn AI, after all, it was the currently hottest technology trend.
                 It happened when an interesting youtube video popped up on my recommendations,
@@ -180,8 +180,8 @@
         </section>
         
         <!-- Modifying the birds -->
-        <section>
-            <h2 id="modify">Modifying The Birds</h2>
+        <section id="modify">
+            <h2>Modifying The Birds</h2>
             <p>
                 Now, I will adapt the player/bird so it doesn't jump on input, instead it will calculate if it will jump based on the weights, which will be a list of floats.
                 <!-- For ease, I will put the calculations every physics frame, but if I ever need to optimize it, I might add a seperate game tick every 1/5th of a second or so to calculate the values.
@@ -315,8 +315,8 @@ func queuePipe(pipe: Pipe):
         </section>
 
         <!-- Generating the population -->
-        <section>
-            <h2 id="generating-population">Generating The Population</h2>
+        <section id="generating-population">
+            <h2>Generating The Population</h2>
             <div>
                 <p>
                     Now that that's done, we will work on the Trainer class, which will do several things:
@@ -414,9 +414,8 @@ var results : Array[Result] = []</code></pre>
             </p>
         </section>
 
-<!-- CHANGE INTO CODE INSTEAD OF IMAGE -->
-        <section>
-            <h2 id="testing-population">Testing The Population</h2>
+        <section id="testing-population">
+            <h2>Testing The Population</h2>
             <p>
                 The "prepare_next_generation" function should be called by the parent of the trainer node.
                 When it has prepared the next generation, it will emit the "next_generation_ready" signal to tell
@@ -462,8 +461,8 @@ set_deferred("freeze", true)</code></pre>
             </p>
         </section>
 
-        <section>
-            <h2 id="gather-results">Gathering The Results</h2>
+        <section id="gather-results">
+            <h2>Gathering The Results</h2>
             <p>
                 The birds will attempt to survive with the weights (genetic code) given to them by the "Trainer" and when they die, they will send the score (amount of pipes they passed) and their weights (genetic code).
                 It does this by emitting the "died" signal. The "Trainer" will capture the signal and push it into the "results" array.
@@ -505,9 +504,8 @@ set_deferred("freeze", true)</code></pre>
             </p>
         </section>
 
-
-        <section>
-            <h2 id="genetic-algorithm">The Genetic Algorithm</h2>
+        <section id="genetic-algorithm">
+            <h2>The Genetic Algorithm</h2>
             <p>
                 This is where the machine can "learn" by simulating natural selection. Here, we are going to build
                 a basic genetic algorithm. This is the general code to do that.
@@ -658,8 +656,8 @@ func mutate(weights: Array) -> void:
             </p>
         </section>
 
-        <section>
-            <h2 id="end-result">The End Result</h2>
+        <section id="end-result">
+            <h2>The End Result</h2>
             <figure>
                 <video src="./images/ml-flappy-birds/Gameplay 1.mp4" controls></video>
                 <figcaption>Flappy Birds with Machine Learning</figcaption>
@@ -793,7 +791,6 @@ var default_initialization_range := 100</code></pre>
             
             <p>Thanks for reading till the end. 👍</p>
         </section>
-        
     </div>
 </body>
 </html>

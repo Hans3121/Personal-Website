@@ -73,6 +73,7 @@ a:hover {
     padding-top: 1.5rem;
 
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
 }
 
@@ -114,11 +115,16 @@ img, video {
 }
 
 figure {
-    width: min(90vw, 600px);
+    width: min(90vw, 800px);
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: start;
+    justify-content: center;
+    gap: 5px;
+}
+figcaption {
+    width: 100%;
+    text-align: center;
 }
 
 
@@ -136,12 +142,13 @@ figure {
     width: max(45%, 500px);
 }
 
-figcaption {
-    text-align: center;
-}
+
+
 
 ol, ul {
     padding-left: 2rem;
+    text-align: left;
+    width: 100%;
 }
 
 div:has(table) {
