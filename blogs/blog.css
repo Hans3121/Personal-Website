@@ -122,6 +122,10 @@ figure {
     justify-content: center;
     gap: 5px;
 }
+
+figure > img {
+    max-width: 550px;
+}
 figcaption {
     width: 100%;
     text-align: center;
@@ -175,6 +179,8 @@ pre {
 .border {
     border: 1px solid black;
 }
+
+
 
 /* For code blocks using prismJS */
 :not(pre)>code[class*=language].p-1 {

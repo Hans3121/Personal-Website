@@ -214,7 +214,7 @@ npm start</code></pre>
             </p>
 
             <figure title="React Default Screen">
-                <img src="./images/reactScreen.png" style="max-width: 300px;" alt="Initial ReactJS Screen">
+                <img src="./images/reactScreen.png" alt="Initial ReactJS Screen">
                 
                 <figcaption>If you are having troubles, try reading <a href="https://create-react-app.dev/docs/getting-started">this</a></figcaption>
             </figure>
@@ -739,13 +739,16 @@ function App() {
                 Now you can try clicking on one of the courses and filling out the form.
                 You should then see the form data being printed out in the terminal (not browser) as JSON.
             </p>
-
+            
+            <figure title="UI with AddReview component">
+                <img class="border" src="./images/AddReview.png" alt="AddReview Component">
+            </figure>
             <p>
                 We have confirmed that the data is being sent to the backend server, now we just need to store it.
                 Since we don't have a database yet, let's just push it into the reviews list in Express.
             </p>
 
-            <figure id="Express 'POST /reviews' handler">
+            <figure title="Express 'POST /reviews' handler">
                 <div class="express"></div>
                 <pre><code class="language-js">...
 const reviews = [
@@ -778,6 +781,9 @@ app.post("/reviews", (req, res) => {
                 Try filling in a review, then refresh the page and select the course again.
                 Your review has been saved 🥳. 
             </p>
+            <figure title="Added Review">
+                <img class="border" src="./images/AddedReview.png" alt="UI with extra review">
+            </figure>
         </section>
 
         <p>
